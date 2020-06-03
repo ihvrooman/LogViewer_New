@@ -1,0 +1,151 @@
+﻿<UserControl x:Class="LogViewer.Views.LogViewManagementView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LogViewer.Views"
+             xmlns:viewModels="clr-namespace:LogViewer.ViewModels"
+             xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="200" Loaded="LogViewManagementView_Loaded" Name="LogViewManagement_View">
+    <UserControl.DataContext>
+        <viewModels:LogViewManagementViewModel/>
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style BasedOn="{StaticResource MetroListBox}" TargetType="ListBox">
+                <Setter Property="Background" Value="{DynamicResource FlyoutBackgroundBrush}"/>
+            </Style>
+            <Style BasedOn="{StaticResource MetroListBoxItem}" TargetType="ListBoxItem">
+                <Setter Property="Background" Value="{DynamicResource FlyoutBackgroundBrush}"/>
+            </Style>
+            <ContextMenu x:Key="ContextMenu">
+                <MenuItem Header="Remove" Command="{Binding DataContext.RemoveLogSourceFromLogViewCommand, Source={x:Reference LogViewManagement_View}}" CommandParameter="{Binding}">
+                    <MenuItem.Icon>
+                        <iconPacks:PackIconModern Kind="Delete" Margin="5,0,0,0"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <DockPanel Background="{DynamicResource FlyoutBackgroundBrush}">
+        <Grid DockPanel.Dock="Bottom">
+            <Grid.Resources>
+                <Style x:Key="InfoStyle" TargetType="TextBlock">
+                    <Setter Property="Margin" Value="5"/>
+                </Style>
+            </Grid.Resources>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <!--First row-->
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="0" Grid.Column="0" BorderThickness="0,1,0,0">
+                <TextBlock x:Name="TextBlock" Text="Type" Style="{StaticResource InfoStyle}"/>
+            </Border>
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="0" Grid.Column="1" BorderThickness="1,1,0,0">
+                <TextBlock Text="Unfiltered" Style="{StaticResource InfoStyle}"/>
+            </Border>
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="0" Grid.Column="2" BorderThickness="1,1,0,0">
+                <TextBlock Text="Filtered" Style="{StaticResource InfoStyle}"/>
+            </Border>
+
+            <!--Second row-->
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="1" Grid.Column="0" BorderThickness="0,1,0,0">
+                <TextBlock Text="Error" Style="{StaticResource InfoStyle}"/>
+            </Border>
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="1" Grid.Column="1" BorderThickness="1,1,0,0">
+                <TextBlock Text="{Binding NumUnfilteredErrors}" Style="{StaticResource InfoStyle}"/>
+            </Border>
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="1" Grid.Column="2" BorderThickness="1,1,0,0">
+                <TextBlock Text="1" Style="{StaticResource InfoStyle}"/>
+            </Border>
+
+            <!--Third row-->
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="2" Grid.Column="0" BorderThickness="0,1,0,0">
+                <TextBlock Text="Warn" Style="{StaticResource InfoStyle}"/>
+            </Border>
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="2" Grid.Column="1" BorderThickness="1,1,0,0">
+                <TextBlock Text="5" Style="{StaticResource InfoStyle}"/>
+            </Border>
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="2" Grid.Column="2" BorderThickness="1,1,0,0">
+                <TextBlock Text="1" Style="{StaticResource InfoStyle}"/>
+            </Border>
+
+            <!--Fourth row-->
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="3" Grid.Column="0" BorderThickness="0,1,0,0">
+                <TextBlock Text="Info" Style="{StaticResource InfoStyle}"/>
+            </Border>
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="3" Grid.Column="1" BorderThickness="1,1,0,0">
+                <TextBlock Text="5" Style="{StaticResource InfoStyle}"/>
+            </Border>
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="3" Grid.Column="2" BorderThickness="1,1,0,0">
+                <TextBlock Text="1" Style="{StaticResource InfoStyle}"/>
+            </Border>
+
+            <!--Fifth row-->
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="4" Grid.Column="0" BorderThickness="0,1,0,0">
+                <TextBlock Text="Debug" Style="{StaticResource InfoStyle}"/>
+            </Border>
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="4" Grid.Column="1" BorderThickness="1,1,0,0">
+                <TextBlock Text="5" Style="{StaticResource InfoStyle}"/>
+            </Border>
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="4" Grid.Column="2" BorderThickness="1,1,0,0">
+                <TextBlock Text="1" Style="{StaticResource InfoStyle}"/>
+            </Border>
+
+            <!--Sixth row-->
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="5" Grid.Column="0" BorderThickness="0,1,0,0">
+                <TextBlock Text="Other" Style="{StaticResource InfoStyle}"/>
+            </Border>
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="5" Grid.Column="1" BorderThickness="1,1,0,0">
+                <TextBlock Text="5" Style="{StaticResource InfoStyle}"/>
+            </Border>
+            <Border BorderBrush="{Binding Foreground, ElementName=TextBlock}" Grid.Row="5" Grid.Column="2" BorderThickness="1,1,0,0">
+                <TextBlock Text="1" Style="{StaticResource InfoStyle}"/>
+            </Border>
+        </Grid>
+        
+        <Border DockPanel.Dock="Top" Padding="10">
+            <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                    <TextBlock Text="Files" Margin="0,0,5,0" FontSize="20"/>
+                    <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="20" Height="20" VerticalAlignment="Center" Command="{Binding OpenOpenLogFileViewCommand}" ToolTip="Add a log file">
+                        <iconPacks:PackIconModern Kind="Add" Height="10" Width="10"/>
+                    </Button>
+                </StackPanel>
+                <ListBox ItemsSource="{Binding LogFiles}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding NetworkFile.Name}" TextTrimming="CharacterEllipsis" ToolTip="{Binding NetworkFile.FullName}" ContextMenu="{StaticResource ContextMenu}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                    <TextBlock Text="Databases" Margin="0,0,5,0" FontSize="20"/>
+                    <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}" Width="20" Height="20" Command="{Binding OpenOpenDatabaseViewCommand}" ToolTip="Add a database">
+                        <iconPacks:PackIconModern Kind="Add" Height="10" Width="10"/>
+                    </Button>
+                </StackPanel>
+                <ListBox ItemsSource="{Binding Databases}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}" ContextMenu="{StaticResource ContextMenu}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </Border>
+    </DockPanel>
+</UserControl>
