@@ -25,7 +25,7 @@ namespace LogViewer.Services
                 try
                 {
                     serviceOperationHelper.LogServiceOperation(ServiceOperationStatus.Attempting);
-                    
+
                     var numberOfOldLogEntries = logEntriesSourceCache.Keys.Where(k => k.Contains(logFile.Identifier)).Count();
                     var contents = File.ReadAllText(logFile.NetworkFile.FullName);
                     long logEntryIndex = 0;
@@ -56,9 +56,7 @@ namespace LogViewer.Services
         #region Private methods
         private static List<string> GetLogEntriesFromLogContents(string logContents)
         {
-            var logEntries = new List<string>();
-
-            //Determine whether or not log type is standard
+            //Determine whether or not log type is standard (i.e. created by the AppStandards library)
             var prefix = string.Empty;
             if (logContents.Length > 2)
             {
@@ -67,55 +65,19 @@ namespace LogViewer.Services
             if (prefix == "-E-" || prefix == "-W-" || prefix == "-I-" || prefix == "-V-" || prefix == "-D-" || prefix == "-D:E-" || prefix == "-D:W-" || prefix == "-D:I-" || prefix == "-D:V-" || prefix == "-U-")
             {
                 //Log is standard log, begin parsing
-                var logEntryPartialStrings = Regex.Split(logContents, "(-[EWIVDU]-)");
-                if (logEntryPartialStrings.Length < 2)
+                var partialLogEntryStrings = Regex.Split(logContents, "(-[EWIVDU]-)");
+                if (partialLogEntryStrings.Length < 2)
                 {
-                    logEntryPartialStrings = Regex.Split(logContents, "(-[D]:[EWIV]-)");
+                    partialLogEntryStrings = Regex.Split(logContents, "(-[D]:[EWIV]-)");
                 }
-                var combine = false;
-                prefix = string.Empty;
-                foreach (var logEntryPartialString in logEntryPartialStrings)
-                {
-                    if (!string.IsNullOrWhiteSpace(logEntryPartialString))
-                    {
-                        if (combine)
-                        {
-                            logEntries.Add(prefix + logEntryPartialString);
-                        }
-                        else
-                        {
-                            prefix = logEntryPartialString;
-                        }
-                        combine = !combine;
-                    }
-                }
-
-                return logEntries;
+                return CombinePartialLogEntries(partialLogEntryStrings);
             }
-            else if (IsProficyDateTime(logContents.Substring(0, 23), new TimeSpan(0, 0, 0), out DateTime proficyDateTime))
+            else if (IsProficyDateTime(logContents.Substring(0, 23), new TimeSpan(0, 0, 0), out DateTime proficyDateTime, false))
             {
                 //Log is a proficy log, begin parsing
                 logContents = logContents.Replace("\t", " ");
-                var logEntryPartialStrings = Regex.Split(logContents, @"(\d+[-]\d+[-]\d+\s\d+[:]\d+[:]\d+[,.]\d+)");
-                var combine = false;
-                var timeStamp = string.Empty;
-                foreach (var logEntryPartialString in logEntryPartialStrings)
-                {
-                    if (!string.IsNullOrWhiteSpace(logEntryPartialString))
-                    {
-                        if (combine)
-                        {
-                            logEntries.Add(timeStamp + logEntryPartialString);
-                        }
-                        else
-                        {
-                            timeStamp = logEntryPartialString;
-                        }
-                        combine = !combine;
-                    }
-                }
-
-                return logEntries;
+                var partialLogEntryStrings = Regex.Split(logContents, @"(\d+[-]\d+[-]\d+\s\d+[:]\d+[:]\d+[,.]\d+)");
+                return CombinePartialLogEntries(partialLogEntryStrings);
             }
             else if (logContents.Substring(0, 7).Contains("**"))
             {
@@ -129,7 +91,37 @@ namespace LogViewer.Services
                     }
                 }
             }
-            throw new Exception($"Could not parse log contents as Standard or Proficy log.");
+            else if (DateTime.TryParse(logContents.Substring(0, 27).Replace('T', ' '), out _))
+            {
+                //Log entry is an NLog log entry
+                var logEntryPartialStrings = Regex.Split(logContents, @"(\d+[-]\d+[-]\d+\w\d+[:]\d+[:]\d+[,.]\d+)");
+                return CombinePartialLogEntries(logEntryPartialStrings);
+            }
+            throw new Exception($"Could not parse log contents as Standard, NLog, or Proficy log.");
+        }
+
+        private static List<string> CombinePartialLogEntries(string[] partialLogEntryStrings)
+        {
+            var logEntries = new List<string>();
+            var combine = false;
+            var timeStamp = string.Empty;
+            foreach (var partialLogEntryString in partialLogEntryStrings)
+            {
+                if (!string.IsNullOrWhiteSpace(partialLogEntryString))
+                {
+                    if (combine)
+                    {
+                        logEntries.Add(timeStamp + partialLogEntryString);
+                    }
+                    else
+                    {
+                        timeStamp = partialLogEntryString;
+                    }
+                    combine = !combine;
+                }
+            }
+
+            return logEntries;
         }
 
         /// <summary>
@@ -152,22 +144,30 @@ namespace LogViewer.Services
             }
             catch (Exception ex)
             {
-                //If can't parse as standard, try parsing as proficy log entry
+                //If can't parse as standard, try parsing as NLog
                 try
                 {
-                    //Add computername to filter options
-                    Mediator.NotifyColleagues(MediatorMessages.AddAvailableComputername, parentLogFile.ComputerName);
-                    return ParseProficyLogEntry(logEntryString, parentLogFile, logEntryIdentifier);
+                    return ParseNLogEntry(logEntryString, parentLogFile, logEntryIdentifier);
                 }
-                catch (Exception ex_prof)
+                catch (Exception ex_nlog)
                 {
-                    var message = $"Could not parse log entry string as standard or Proficy log entry. ";
-                    if (logEntryString != null)
+                    //If can't parse as standard or NLog, try parsing as proficy log entry
+                    try
                     {
-                        message += $"| Log entry string: \"{logEntryString}\" ";
+                        //Add computername to filter options
+                        Mediator.NotifyColleagues(MediatorMessages.AddAvailableComputername, parentLogFile.ComputerName);
+                        return ParseProficyLogEntry(logEntryString, parentLogFile, logEntryIdentifier);
                     }
-                    message += $"| Inner exception message from standard parse: {ex.Message} | Inner exception message from Proficy parse: {ex_prof.Message}";
-                    throw new Exception(message);
+                    catch (Exception ex_prof)
+                    {
+                        var message = $"Could not parse log entry string as standard, NLog, or Proficy log entry. ";
+                        if (logEntryString != null)
+                        {
+                            message += $"| Log entry string: \"{logEntryString}\" ";
+                        }
+                        message += $"| Inner exception message from standard parse: {ex.Message} | Inner exception message from NLog parse: {ex_nlog.Message} | Inner exception message from Proficy parse: {ex_prof.Message}";
+                        throw new Exception(message);
+                    }
                 }
             }
         }
@@ -273,6 +273,9 @@ namespace LogViewer.Services
                     case "-D:V-":
                         type = LogMessageType.DebugVerbose;
                         break;
+                    default:
+                        type = LogMessageType.Unknown;
+                        break;
                 }
 
                 //Parse time stamp
@@ -283,6 +286,72 @@ namespace LogViewer.Services
             catch (Exception ex)
             {
                 var message = $"Could not parse log entry as standard log entry. ";
+                message += $"| Inner exception message: {ex.Message}";
+                throw new Exception(message);
+            }
+        }
+
+        private static LogEntry ParseNLogEntry(string logEntryString, LogFile parentLogFile, string logEntryIdentifier)
+        {
+            if (string.IsNullOrWhiteSpace(logEntryString))
+            {
+                throw new ArgumentException("Parameter cannot be null or whitespace.", nameof(logEntryString));
+            }
+
+            try
+            {
+                //Extract the type, timestamp, and message as strings
+                var typeString = string.Empty;
+                var numOfChars = 1;
+                for (int i = 36; i < logEntryString.Length - 37; i++)
+                {
+                    if (logEntryString[i] == ' ')
+                    {
+                        break;
+                    }
+                    ++numOfChars;
+                }
+                typeString = logEntryString.Substring(36, numOfChars).Replace(" ", string.Empty);
+
+
+                var timeStampString = logEntryString.Substring(0, 24).Replace('T', ' ');
+                var username = string.Empty;
+                var computerName = string.Empty;
+                var messageCharSkips = 37 + typeString.Length + 3;
+                var message = logEntryString.Substring(messageCharSkips, logEntryString.Length - messageCharSkips).Replace(Environment.NewLine, string.Empty);
+
+                //Determine the type
+                LogMessageType type = LogMessageType.Unknown;
+                switch (typeString)
+                {
+                    case "ERROR":
+                        type = LogMessageType.Error;
+                        break;
+                    case "WARNING":
+                        type = LogMessageType.Warning;
+                        break;
+                    case "INFO":
+                        type = LogMessageType.Information;
+                        break;
+                    case "VERBOSE":
+                        type = LogMessageType.Verbose;
+                        break;
+                    case "DEBUG":
+                        type = LogMessageType.Debug;
+                        break;
+                    default:
+                        type = LogMessageType.Unknown;
+                        break;
+                }
+
+                //Parse time stamp
+                var timeStamp = DateTime.ParseExact(timeStampString, "yyyy-MM-dd HH:mm:ss.ffff", CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
+
+                return new LogEntry(type, timeStamp, message, parentLogFile, logEntryIdentifier, username, computerName);
+            }
+            catch (Exception ex)
+            {
+                var message = $"Could not parse log entry as NLog log entry. ";
                 message += $"| Inner exception message: {ex.Message}";
                 throw new Exception(message);
             }
@@ -451,7 +520,7 @@ namespace LogViewer.Services
             }
         }
 
-        private static bool IsProficyDateTime(string proficyDateTimeString, TimeSpan offsetAdjustment, out DateTime proficyDateTime)
+        private static bool IsProficyDateTime(string proficyDateTimeString, TimeSpan offsetAdjustment, out DateTime proficyDateTime, bool throwExceptions = true)
         {
             try
             {
@@ -469,7 +538,15 @@ namespace LogViewer.Services
                 }
                 catch
                 {
-                    throw new Exception($"Could not parse string \"{proficyDateTimeString}\" as Proficy dateTime.");
+                    if (throwExceptions)
+                    {
+                        throw new Exception($"Could not parse string \"{proficyDateTimeString}\" as Proficy dateTime.");
+                    }
+                    else
+                    {
+                        proficyDateTime = DateTime.MinValue;
+                        return false;
+                    }
                 }
             }
         }

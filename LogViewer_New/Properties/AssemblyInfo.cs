@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("LogViewer")]
 [assembly: AssemblyDescription("An application used to view log entries.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Weyerhaeuser")]
+[assembly: AssemblyCompany("IHV Company")]
 [assembly: AssemblyProduct("LogViewer")]
-[assembly: AssemblyCopyright("Copyright © Weyerhaeuser 2019")]
+[assembly: AssemblyCopyright("Copyright © IHV Company 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

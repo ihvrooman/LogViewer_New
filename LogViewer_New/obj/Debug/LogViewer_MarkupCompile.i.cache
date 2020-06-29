@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\VroomanI\source\repos\LogViewer_New\LogViewer_New\obj\Debug\
+C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Debug\
 LogViewer
 none
 false
 DEBUG;TRACE
-C:\Users\VroomanI\source\repos\LogViewer_New\LogViewer_New\App.xaml
+C:\Source\Personal\LogViewer_New\LogViewer_New\App.xaml
 81517964815
 
-55-140710263
-42-2027951556
+52-283866661
+42-374564803
 Views\DatabasesView.xaml;Views\FilterView.xaml;Views\LaunchView.xaml;Views\LogViewDetailsDialog.xaml;Views\LogViewManagementView.xaml;Views\LogEntriesView.xaml;Views\MainWindow.xaml;Views\HomeView.xaml;
 
-True
+False
 

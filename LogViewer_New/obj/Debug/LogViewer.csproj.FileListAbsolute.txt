@@ -143,13 +143,7 @@ C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\MahApps.Metro.IconPacks
 C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\MahApps.Metro.IconPacks.Zondicons.dll
 C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\MahApps.Metro.SimpleChildWindow.dll
 C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\System.Windows.Interactivity.dll
-C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\System.ValueTuple.dll
-C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\System.Threading.Tasks.Extensions.dll
-C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
-C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\AppStandards.pdb
-C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\AppStandards.xml
 C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\ControlzEx.pdb
-C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\DynamicData.xml
 C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\MahApps.Metro.pdb
 C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\MahApps.Metro.xml
 C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\MahApps.Metro.IconPacks.pdb
@@ -198,7 +192,6 @@ C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\MahApps.Metro.IconPacks
 C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\MahApps.Metro.IconPacks.Zondicons.xml
 C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\MahApps.Metro.SimpleChildWindow.pdb
 C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\MahApps.Metro.SimpleChildWindow.xml
-C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Debug\LogViewer.csprojAssemblyReference.cache
 C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Debug\Views\DatabasesView.g.cs
 C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Debug\Views\FilterView.g.cs
 C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Debug\Views\LaunchView.g.cs
