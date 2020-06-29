@@ -317,7 +317,7 @@ namespace LogViewer.Services
                 var timeStampString = logEntryString.Substring(0, 24).Replace('T', ' ');
                 var username = string.Empty;
                 var computerName = string.Empty;
-                var messageCharSkips = 37 + typeString.Length + 3;
+                var messageCharSkips = 44;
                 var message = logEntryString.Substring(messageCharSkips, logEntryString.Length - messageCharSkips).Replace(Environment.NewLine, string.Empty);
 
                 //Determine the type
@@ -327,7 +327,13 @@ namespace LogViewer.Services
                     case "ERROR":
                         type = LogMessageType.Error;
                         break;
+                    case "FATAL":
+                        type = LogMessageType.Error;
+                        break;
                     case "WARNING":
+                        type = LogMessageType.Warning;
+                        break;
+                    case "WARN":
                         type = LogMessageType.Warning;
                         break;
                     case "INFO":

@@ -16,8 +16,25 @@ namespace LogViewer.Services
     public static class DatabaseService
     {
         #region Constants
-        public const string DatabaseAndTableName = "[SOADB].[dbo].[Local_SSI_ErrorLogDetail]";
-        private const string sqlCommandText = @"
+        public const string DatabaseAndTableName = "EventLogConnectX or EventLogJetX"; //"[SOADB].[dbo].[Local_SSI_ErrorLogDetail]";
+        private const string sqlCommandText = @"SELECT [Code]
+      ,[Message]
+      ,[MessageDetails]
+      ,[EventLevel]
+      ,[Timestamp]
+      ,[DeviceId]
+      ,[UserID]
+  FROM [JetExApp].[dbo].[EventLogConnectX]
+  UNION
+  SELECT [Code]
+      ,[Message]
+      ,[MessageDetails]
+      ,[EventLevel]
+      ,[Timestamp]
+      ,[DeviceId]
+      ,[UserID]
+  FROM [JetExApp].[dbo].[EventLogJetX]";
+            /*@"
 SELECT 
     [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[OBJECT_NAME],
     [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[Error_Section],
@@ -28,7 +45,7 @@ FROM[SOADB].[dbo].[Local_SSI_ErrorLogDetail]
 WITH (NOLOCK)
 INNER JOIN [SOADB].[dbo].[Local_SSI_ErrorSeverityLevel]
 ON[SOADB].[dbo].[Local_SSI_ErrorSeverityLevel].Severity_Level_Id = [SOADB].[dbo].[Local_SSI_ErrorLogDetail].Error_Severity_Level
-ORDER BY [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[TimeStamp]";
+ORDER BY [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[TimeStamp]";*/
         #endregion
 
         #region Public methods
@@ -121,11 +138,15 @@ ORDER BY [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[TimeStamp]";
         {
             var maxCharLength = 100;
             var keepPrompting = true;
-            var dialogSettings1 = new MetroDialogSettings() { AffirmativeButtonText = "Add" };
-
-            while(keepPrompting)
+            var dialogSettings1 = new MetroDialogSettings()
             {
-                var newDatabaseName = dialogCoordinator.ShowModalInputExternal(dialogContext, "Add Database", "Database name:", dialogSettings1)?.ToUpper();
+                AffirmativeButtonText = "Add",
+            };
+
+            while (keepPrompting)
+            {
+                var newDatabaseName = dialogCoordinator.ShowModalInputExternal(dialogContext, "Add Database", "Enter the database name in the format '{SQLInstanceName}.{DatabaseName}':", dialogSettings1)?.ToUpper();
+                dialogSettings1.DefaultText = newDatabaseName;
                 if (newDatabaseName == null)
                 {
                     keepPrompting = false;
@@ -138,6 +159,10 @@ ORDER BY [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[TimeStamp]";
                 {
                     await dialogCoordinator.ShowMessageAsync(dialogContext, "Invalid Database Name", $"The new database name cannot be greater than {maxCharLength} characters.");
                     dialogSettings1.DefaultText = newDatabaseName.Substring(0, maxCharLength);
+                }
+                else if (!newDatabaseName.Contains(".") || newDatabaseName.Contains("{") || newDatabaseName.Contains("}"))
+                {
+                    await dialogCoordinator.ShowMessageAsync(dialogContext, "Invalid Database Name", "The new database name must be in the format '{SQLInstanceName}.{DatabaseName}'." + Environment.NewLine + "Example: MainServer\\SQLEXPRESS.CustomerInfo");
                 }
                 else if (SettingsService.SettingsContainsDatabaseName(newDatabaseName))
                 {
@@ -152,8 +177,7 @@ ORDER BY [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[TimeStamp]";
                     var databaseExists = false;
                     await Task.Run(() =>
                     {
-                        //TODO: directory info method only checks to see if there's a server that has the specified name. Try doing a sql connection instead.
-                        databaseExists = new DirectoryInfo($"\\\\{newDatabaseName}\\c$").Exists;
+                        databaseExists = TestDatabaseConnection(newDatabaseName);
                     });
                     await progressController.CloseAsync();
 
@@ -205,29 +229,67 @@ ORDER BY [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[TimeStamp]";
         #region Private methods
         private static string GetConnectionString(string databaseName)
         {
-            return $"Data Source={databaseName};Integrated Security=true;Initial Catalog=SOADB";
+            var split = databaseName.Split('.');
+            var SQLInstanceName = split[0];
+            databaseName = split[1];
+            return $"Data Source={SQLInstanceName};Integrated Security=true;Initial Catalog={databaseName}";
+        }
+
+        private static bool TestDatabaseConnection(string databaseName)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(GetConnectionString(databaseName)))
+                {
+                    connection.Open();
+                    connection.Close();
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
 
         private static LogEntry ParseDatabaseLogEntry(SqlDataReader sqlDataReader, string computerName, ILogEntriesSource logEntriesSource, string logEntryIdentifier)
         {
+            //TODO: Join in device table to get device info
             var logMessageType = ParseDatabaseLogEntryType(sqlDataReader.GetString(4));
-            var timeStamp = sqlDataReader.GetDateTime(3).ToLocalTime();
-            var logMessage = $"Object: \"{sqlDataReader["OBJECT_NAME"].ToString()}\" | Section: \"{sqlDataReader["Error_Section"].ToString()}\" | Message: \"{sqlDataReader["ERROR_MESSAGE"].ToString()}\"";
+            var timeStamp = sqlDataReader.GetDateTime(5).ToLocalTime();
+            var logMessage = $"Code: \"{sqlDataReader["Code"]}\" | Message: \"{sqlDataReader["Message"]}\" | Details: \"{sqlDataReader["MessageDetails"]}\" | DeviceId: \"{sqlDataReader["DeviceId"]}\" | UserId: \"{sqlDataReader["UserId"]}\"";
+            /* $"Object: \"{sqlDataReader["OBJECT_NAME"]}\" | Section: \"{sqlDataReader["Error_Section"]}\" | Message: \"{sqlDataReader["ERROR_MESSAGE"]}\"";*/
             return new LogEntry(logMessageType, timeStamp, logMessage, logEntriesSource, logEntryIdentifier, computername: computerName);
         }
 
         private static LogMessageType ParseDatabaseLogEntryType(string databaseLogEntryType)
         {
-            switch (databaseLogEntryType.ToUpper())
+            //switch (databaseLogEntryType.ToUpper())
+            //{
+            //    case ("CRITICAL"):
+            //        return LogMessageType.Error;
+            //    case ("WARNING"):
+            //        return LogMessageType.Warning;
+            //    case ("INFORMATIONAL"):
+            //        return LogMessageType.Information;
+            //    default:
+            //        return LogMessageType.Error;
+            //}
+
+            switch (databaseLogEntryType)
             {
-                case ("CRITICAL"):
+                case "0":
                     return LogMessageType.Error;
-                case ("WARNING"):
+                case "1":
+                    return LogMessageType.Error;
+                case "2":
                     return LogMessageType.Warning;
-                case ("INFORMATIONAL"):
+                case "3":
                     return LogMessageType.Information;
+                case "4":
+                    return LogMessageType.Debug;
                 default:
-                    return LogMessageType.Error;
+                    return LogMessageType.Unknown;
             }
         }
         #endregion
