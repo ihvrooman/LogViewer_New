@@ -49,7 +49,6 @@ namespace LogViewer.Views
         #region Constructor
         public MainWindow()
         {
-            //TODO: Upgrade user settings to be compatible with new version.
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             InitializeComponent();
             DataContext = new MainWindowViewModel(DialogCoordinator.Instance);
@@ -60,6 +59,7 @@ namespace LogViewer.Views
         #region Private methods
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+            Hide();
             var ex = (Exception)e.ExceptionObject;
             var errorMessage = $"An unhandled exception occurred. Error message: {ex.Message} Exception stack trace: {ex.StackTrace}";
             if (ex.InnerException != null)
@@ -97,13 +97,11 @@ namespace LogViewer.Views
             }
             else
             {
-                //TODO: Implement single instance functionality.
                 _viewModel.SaveLayout();
                 SaveWindowPlacement();
                 _initialized = false;
                 Hide();
-                //TODO: Uncomment shutdown routine.
-                //Routines.Shutdown(AppInfo.BaseAppInfo);
+                Routines.Shutdown(AppInfo.BaseAppInfo);
             }
         }
 

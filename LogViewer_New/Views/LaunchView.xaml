@@ -27,17 +27,23 @@
                 TargetType="{x:Type MenuItem}">
                 <Setter Property="Icon">
                     <Setter.Value>
-                        <iconPacks:PackIconMaterialLight Margin="5,0,0,0" Kind="Pin" />
+                        <iconPacks:PackIconMaterialLight
+                            Margin="5,0,0,0"
+                            Kind="Pin" />
                     </Setter.Value>
                 </Setter>
                 <Setter Property="Header" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.DataContext.IsPinned, Converter={StaticResource IsPinnedToMenuTextConverter}}" />
                 <Setter Property="Command" Value="{Binding DataContext.ToggleOpenableObjectIsPinnedCommand, Source={x:Reference Launch_View}}" />
                 <Setter Property="CommandParameter" Value="{Binding}" />
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.DataContext.IsPinned}" Value="True">
+                    <DataTrigger
+                        Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.DataContext.IsPinned}"
+                        Value="True">
                         <Setter Property="Icon">
                             <Setter.Value>
-                                <iconPacks:PackIconMaterialLight Margin="5,0,0,0" Kind="PinOff" />
+                                <iconPacks:PackIconMaterialLight
+                                    Margin="5,0,0,0"
+                                    Kind="PinOff" />
                             </Setter.Value>
                         </Setter>
                     </DataTrigger>
@@ -66,7 +72,9 @@
                     CommandParameter="{Binding}"
                     Header="Delete">
                     <MenuItem.Icon>
-                        <iconPacks:PackIconModern Margin="5,0,0,0" Kind="Delete" />
+                        <iconPacks:PackIconModern
+                            Margin="5,0,0,0"
+                            Kind="Delete" />
                     </MenuItem.Icon>
                 </MenuItem>
             </ContextMenu>
@@ -93,14 +101,18 @@
                     CommandParameter="{Binding}"
                     Header="Delete">
                     <MenuItem.Icon>
-                        <iconPacks:PackIconModern Margin="5,0,0,0" Kind="Delete" />
+                        <iconPacks:PackIconModern
+                            Margin="5,0,0,0"
+                            Kind="Delete" />
                     </MenuItem.Icon>
                 </MenuItem>
             </ContextMenu>
 
             <!--  Wrap panel template  -->
             <ItemsPanelTemplate x:Key="WrapPanelTemplate">
-                <WrapPanel Margin="0,10,0,0" Orientation="Horizontal" />
+                <WrapPanel
+                    Margin="0,10,0,0"
+                    Orientation="Horizontal" />
             </ItemsPanelTemplate>
 
             <!--  Tile templates  -->
@@ -289,9 +301,13 @@
                 </DockPanel>
             </ListBoxItem>
         </ListBox>
-        <DockPanel Margin="10,40,10,10" DockPanel.Dock="Right">
+        <DockPanel
+            Margin="10,40,10,10"
+            DockPanel.Dock="Right">
             <!--  Search  -->
-            <DockPanel Margin="0,0,0,10" DockPanel.Dock="Top">
+            <DockPanel
+                Margin="0,0,0,10"
+                DockPanel.Dock="Top">
                 <Popup
                     x:Name="popup"
                     Width="450"
@@ -303,7 +319,9 @@
                     PlacementTarget="{Binding ElementName=SearchTextbox}"
                     PopupAnimation="Fade"
                     StaysOpen="False">
-                    <Border BorderBrush="{DynamicResource AccentBaseColorBrush}" BorderThickness="1">
+                    <Border
+                        BorderBrush="{DynamicResource AccentBaseColorBrush}"
+                        BorderThickness="1">
                         <Grid>
                             <ListBox
                                 x:Name="SearchableListBox"
@@ -317,7 +335,9 @@
                                             ToolTip="{Binding Identifier}">
                                             <i:Interaction.Triggers>
                                                 <i:EventTrigger EventName="MouseUp">
-                                                    <i:InvokeCommandAction Command="{Binding DataContext.OpenOpenableObjectCommand, Source={x:Reference Launch_View}}" CommandParameter="{Binding}" />
+                                                    <i:InvokeCommandAction
+                                                        Command="{Binding DataContext.OpenOpenableObjectCommand, Source={x:Reference Launch_View}}"
+                                                        CommandParameter="{Binding}" />
                                                 </i:EventTrigger>
                                             </i:Interaction.Triggers>
                                             <iconPacks:PackIconMaterial
@@ -342,7 +362,9 @@
                                             ToolTip="{Binding Identifier}">
                                             <i:Interaction.Triggers>
                                                 <i:EventTrigger EventName="MouseUp">
-                                                    <i:InvokeCommandAction Command="{Binding DataContext.OpenOpenableObjectCommand, Source={x:Reference Launch_View}}" CommandParameter="{Binding}" />
+                                                    <i:InvokeCommandAction
+                                                        Command="{Binding DataContext.OpenOpenableObjectCommand, Source={x:Reference Launch_View}}"
+                                                        CommandParameter="{Binding}" />
                                                 </i:EventTrigger>
                                             </i:Interaction.Triggers>
                                             <iconPacks:PackIconOcticons
@@ -367,7 +389,9 @@
                                             ToolTip="{Binding Identifier}">
                                             <i:Interaction.Triggers>
                                                 <i:EventTrigger EventName="MouseUp">
-                                                    <i:InvokeCommandAction Command="{Binding DataContext.OpenOpenableObjectCommand, Source={x:Reference Launch_View}}" CommandParameter="{Binding}" />
+                                                    <i:InvokeCommandAction
+                                                        Command="{Binding DataContext.OpenOpenableObjectCommand, Source={x:Reference Launch_View}}"
+                                                        CommandParameter="{Binding}" />
                                                 </i:EventTrigger>
                                             </i:Interaction.Triggers>
                                             <iconPacks:PackIconMaterial
@@ -392,7 +416,9 @@
                                     <Style TargetType="Grid">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Items.Count, Source={x:Reference SearchableListBox}}" Value="0">
+                                            <DataTrigger
+                                                Binding="{Binding Items.Count, Source={x:Reference SearchableListBox}}"
+                                                Value="0">
                                                 <Setter Property="Visibility" Value="Visible" />
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -430,7 +456,9 @@
                 DockPanel.Dock="Top"
                 HorizontalScrollBarVisibility="Disabled"
                 VerticalScrollBarVisibility="Auto">
-                <Controls:TransitioningContentControl Content="{Binding SelectedViewModel}" Transition="Default">
+                <Controls:TransitioningContentControl
+                    Content="{Binding SelectedViewModel}"
+                    Transition="Default">
                     <ContentControl.Resources>
                         <!--  Home view  -->
                         <DataTemplate DataType="{x:Type viewModels:HomeViewModel}">
@@ -574,12 +602,16 @@
                                                 SelectedItem="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.SelectedLogFile}"
                                                 SelectionMode="Single">
                                                 <DataGrid.RowStyle>
-                                                    <Style BasedOn="{StaticResource MetroDataGridRow}" TargetType="DataGridRow">
+                                                    <Style
+                                                        BasedOn="{StaticResource MetroDataGridRow}"
+                                                        TargetType="DataGridRow">
                                                         <Setter Property="ContextMenu" Value="{StaticResource LogFilesContextMenu}" />
                                                     </Style>
                                                 </DataGrid.RowStyle>
                                                 <DataGrid.InputBindings>
-                                                    <MouseBinding Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenableObjectCommand}" MouseAction="LeftDoubleClick" />
+                                                    <MouseBinding
+                                                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenableObjectCommand}"
+                                                        MouseAction="LeftDoubleClick" />
                                                 </DataGrid.InputBindings>
                                                 <DataGrid.Columns>
                                                     <DataGridTemplateColumn>
@@ -594,7 +626,9 @@
                                                         </DataGridTemplateColumn.CellTemplate>
                                                     </DataGridTemplateColumn>
 
-                                                    <DataGridTemplateColumn Header="Name" SortMemberPath="NetworkFile.Name">
+                                                    <DataGridTemplateColumn
+                                                        Header="Name"
+                                                        SortMemberPath="NetworkFile.Name">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <TextBlock
@@ -606,7 +640,9 @@
                                                         </DataGridTemplateColumn.CellTemplate>
                                                     </DataGridTemplateColumn>
 
-                                                    <DataGridTemplateColumn Header="Folder" SortMemberPath="NetworkFile.Directory">
+                                                    <DataGridTemplateColumn
+                                                        Header="Folder"
+                                                        SortMemberPath="NetworkFile.Directory">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <TextBlock
@@ -618,7 +654,9 @@
                                                         </DataGridTemplateColumn.CellTemplate>
                                                     </DataGridTemplateColumn>
 
-                                                    <DataGridTemplateColumn Header="Date Last Modified" SortMemberPath="LastWriteTime">
+                                                    <DataGridTemplateColumn
+                                                        Header="Date Last Modified"
+                                                        SortMemberPath="LastWriteTime">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <TextBlock
@@ -630,7 +668,9 @@
                                                         </DataGridTemplateColumn.CellTemplate>
                                                     </DataGridTemplateColumn>
 
-                                                    <DataGridTemplateColumn Header="Date Last Opened" SortMemberPath="DateLastOpened">
+                                                    <DataGridTemplateColumn
+                                                        Header="Date Last Opened"
+                                                        SortMemberPath="DateLastOpened">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <TextBlock
@@ -642,7 +682,9 @@
                                                         </DataGridTemplateColumn.CellTemplate>
                                                     </DataGridTemplateColumn>
 
-                                                    <DataGridTemplateColumn Header="Size" SortMemberPath="SizeInBytes">
+                                                    <DataGridTemplateColumn
+                                                        Header="Size"
+                                                        SortMemberPath="SizeInBytes">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <TextBlock
@@ -666,12 +708,16 @@
                                                 SelectedItem="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.SelectedLogFile}"
                                                 SelectionMode="Single">
                                                 <DataGrid.RowStyle>
-                                                    <Style BasedOn="{StaticResource MetroDataGridRow}" TargetType="DataGridRow">
+                                                    <Style
+                                                        BasedOn="{StaticResource MetroDataGridRow}"
+                                                        TargetType="DataGridRow">
                                                         <Setter Property="ContextMenu" Value="{StaticResource LogFilesContextMenu}" />
                                                     </Style>
                                                 </DataGrid.RowStyle>
                                                 <DataGrid.InputBindings>
-                                                    <MouseBinding Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenableObjectCommand}" MouseAction="LeftDoubleClick" />
+                                                    <MouseBinding
+                                                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenableObjectCommand}"
+                                                        MouseAction="LeftDoubleClick" />
                                                 </DataGrid.InputBindings>
                                                 <DataGrid.Columns>
                                                     <DataGridTemplateColumn>
@@ -686,7 +732,9 @@
                                                         </DataGridTemplateColumn.CellTemplate>
                                                     </DataGridTemplateColumn>
 
-                                                    <DataGridTemplateColumn Header="Name" SortMemberPath="NetworkFile.Name">
+                                                    <DataGridTemplateColumn
+                                                        Header="Name"
+                                                        SortMemberPath="NetworkFile.Name">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <TextBlock
@@ -698,7 +746,9 @@
                                                         </DataGridTemplateColumn.CellTemplate>
                                                     </DataGridTemplateColumn>
 
-                                                    <DataGridTemplateColumn Header="Folder" SortMemberPath="NetworkFile.Directory">
+                                                    <DataGridTemplateColumn
+                                                        Header="Folder"
+                                                        SortMemberPath="NetworkFile.Directory">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <TextBlock
@@ -710,7 +760,9 @@
                                                         </DataGridTemplateColumn.CellTemplate>
                                                     </DataGridTemplateColumn>
 
-                                                    <DataGridTemplateColumn Header="Date Last Modified" SortMemberPath="LastWriteTime">
+                                                    <DataGridTemplateColumn
+                                                        Header="Date Last Modified"
+                                                        SortMemberPath="LastWriteTime">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <TextBlock
@@ -722,7 +774,9 @@
                                                         </DataGridTemplateColumn.CellTemplate>
                                                     </DataGridTemplateColumn>
 
-                                                    <DataGridTemplateColumn Header="Date Last Opened" SortMemberPath="DateLastOpened">
+                                                    <DataGridTemplateColumn
+                                                        Header="Date Last Opened"
+                                                        SortMemberPath="DateLastOpened">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <TextBlock
@@ -734,7 +788,9 @@
                                                         </DataGridTemplateColumn.CellTemplate>
                                                     </DataGridTemplateColumn>
 
-                                                    <DataGridTemplateColumn Header="Size" SortMemberPath="SizeInBytes">
+                                                    <DataGridTemplateColumn
+                                                        Header="Size"
+                                                        SortMemberPath="SizeInBytes">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <TextBlock
@@ -749,7 +805,9 @@
                                                 </DataGrid.Columns>
                                             </DataGrid>
                                         </Controls:MetroTabItem>
-                                        <Controls:MetroTabItem Header="Browse" Selector.Selected="BrowseButton_Clicked" />
+                                        <Controls:MetroTabItem
+                                            Header="Browse"
+                                            Selector.Selected="BrowseButton_Clicked" />
                                     </TabControl>
                                 </DockPanel>
 
@@ -803,7 +861,9 @@
                                             </Button.Triggers>
                                         </Button>
                                     </StackPanel>
-                                    <TabControl Controls:TabControlHelper.Underlined="SelectedTabItem" DockPanel.Dock="Top">
+                                    <TabControl
+                                        Controls:TabControlHelper.Underlined="SelectedTabItem"
+                                        DockPanel.Dock="Top">
                                         <Controls:MetroTabItem Header="Recent Databases">
                                             <ItemsControl
                                                 ItemTemplate="{StaticResource DatabaseTileTemplate}"
@@ -823,7 +883,9 @@
 
                         <!--  Databases view  -->
                         <DataTemplate DataType="{x:Type viewModels:DatabasesViewModel}">
-                            <local:DatabasesView Databases="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.Databases}" DatabasesSourceCache="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.DatabasesSourceCache}" />
+                            <local:DatabasesView
+                                Databases="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.Databases}"
+                                DatabasesSourceCache="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.DatabasesSourceCache}" />
                         </DataTemplate>
 
                         <!--  Open Log View View  -->
@@ -868,12 +930,16 @@
                                         SelectedItem="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.SelectedLogFile}"
                                         SelectionMode="Single">
                                         <DataGrid.RowStyle>
-                                            <Style BasedOn="{StaticResource MetroDataGridRow}" TargetType="DataGridRow">
+                                            <Style
+                                                BasedOn="{StaticResource MetroDataGridRow}"
+                                                TargetType="DataGridRow">
                                                 <Setter Property="ContextMenu" Value="{StaticResource LogFilesContextMenu}" />
                                             </Style>
                                         </DataGrid.RowStyle>
                                         <DataGrid.InputBindings>
-                                            <MouseBinding Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenableObjectCommand}" MouseAction="LeftDoubleClick" />
+                                            <MouseBinding
+                                                Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenableObjectCommand}"
+                                                MouseAction="LeftDoubleClick" />
                                         </DataGrid.InputBindings>
                                         <DataGrid.Columns>
                                             <DataGridTemplateColumn>
@@ -888,7 +954,9 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Name" SortMemberPath="NetworkFile.Name">
+                                            <DataGridTemplateColumn
+                                                Header="Name"
+                                                SortMemberPath="NetworkFile.Name">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <TextBlock
@@ -900,7 +968,9 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Folder" SortMemberPath="NetworkFile.Directory">
+                                            <DataGridTemplateColumn
+                                                Header="Folder"
+                                                SortMemberPath="NetworkFile.Directory">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <TextBlock
@@ -912,7 +982,9 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Date Last Modified" SortMemberPath="LastWriteTime">
+                                            <DataGridTemplateColumn
+                                                Header="Date Last Modified"
+                                                SortMemberPath="LastWriteTime">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <TextBlock
@@ -924,7 +996,9 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Date Last Opened" SortMemberPath="DateLastOpened">
+                                            <DataGridTemplateColumn
+                                                Header="Date Last Opened"
+                                                SortMemberPath="DateLastOpened">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <TextBlock
@@ -936,7 +1010,9 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Size" SortMemberPath="SizeInBytes">
+                                            <DataGridTemplateColumn
+                                                Header="Size"
+                                                SortMemberPath="SizeInBytes">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <TextBlock
@@ -960,12 +1036,16 @@
                                         SelectedItem="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.SelectedLogFile}"
                                         SelectionMode="Single">
                                         <DataGrid.RowStyle>
-                                            <Style BasedOn="{StaticResource MetroDataGridRow}" TargetType="DataGridRow">
+                                            <Style
+                                                BasedOn="{StaticResource MetroDataGridRow}"
+                                                TargetType="DataGridRow">
                                                 <Setter Property="ContextMenu" Value="{StaticResource LogFilesContextMenu}" />
                                             </Style>
                                         </DataGrid.RowStyle>
                                         <DataGrid.InputBindings>
-                                            <MouseBinding Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenableObjectCommand}" MouseAction="LeftDoubleClick" />
+                                            <MouseBinding
+                                                Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenableObjectCommand}"
+                                                MouseAction="LeftDoubleClick" />
                                         </DataGrid.InputBindings>
                                         <DataGrid.Columns>
                                             <DataGridTemplateColumn>
@@ -980,7 +1060,9 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Name" SortMemberPath="NetworkFile.Name">
+                                            <DataGridTemplateColumn
+                                                Header="Name"
+                                                SortMemberPath="NetworkFile.Name">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <TextBlock
@@ -992,7 +1074,9 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Folder" SortMemberPath="NetworkFile.Directory">
+                                            <DataGridTemplateColumn
+                                                Header="Folder"
+                                                SortMemberPath="NetworkFile.Directory">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <TextBlock
@@ -1004,7 +1088,9 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Date Last Modified" SortMemberPath="LastWriteTime">
+                                            <DataGridTemplateColumn
+                                                Header="Date Last Modified"
+                                                SortMemberPath="LastWriteTime">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <TextBlock
@@ -1016,7 +1102,9 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Date Last Opened" SortMemberPath="DateLastOpened">
+                                            <DataGridTemplateColumn
+                                                Header="Date Last Opened"
+                                                SortMemberPath="DateLastOpened">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <TextBlock
@@ -1028,7 +1116,9 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn Header="Size" SortMemberPath="SizeInBytes">
+                                            <DataGridTemplateColumn
+                                                Header="Size"
+                                                SortMemberPath="SizeInBytes">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <TextBlock
@@ -1043,13 +1133,17 @@
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Controls:MetroTabItem>
-                                <Controls:MetroTabItem Header="Browse" Selector.Selected="BrowseButton_Clicked" />
+                                <Controls:MetroTabItem
+                                    Header="Browse"
+                                    Selector.Selected="BrowseButton_Clicked" />
                             </TabControl>
                         </DataTemplate>
 
                         <!--  Open database view  -->
                         <DataTemplate DataType="{x:Type viewModels:OpenDatabaseViewModel}">
-                            <TabControl MaxHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Path=Height, Converter={StaticResource MainWindowHeightToScrollViewerMaxHeightConverter}}" Controls:TabControlHelper.Underlined="SelectedTabItem">
+                            <TabControl
+                                MaxHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Path=Height, Converter={StaticResource MainWindowHeightToScrollViewerMaxHeightConverter}}"
+                                Controls:TabControlHelper.Underlined="SelectedTabItem">
                                 <Controls:MetroTabItem Header="All Databases">
                                     <ScrollViewer>
                                         <ItemsControl

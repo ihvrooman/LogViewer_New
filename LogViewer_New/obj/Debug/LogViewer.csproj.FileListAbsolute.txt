@@ -220,3 +220,16 @@ C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Debug\LogViewer.csproj.CoreCo
 C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Debug\LogViewer.csproj.CopyComplete
 C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Debug\LogViewer.exe
 C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Debug\LogViewer.pdb
+C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\AppStandards.dll
+C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\DynamicData.dll
+C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\System.Reactive.dll
+C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\System.Threading.Tasks.Extensions.dll
+C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\System.ValueTuple.dll
+C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\AppStandards.pdb
+C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\AppStandards.xml
+C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\DynamicData.xml
+C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\System.Reactive.xml
+C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\System.Threading.Tasks.Extensions.xml
+C:\Source\Personal\LogViewer_New\LogViewer_New\bin\Debug\System.ValueTuple.xml

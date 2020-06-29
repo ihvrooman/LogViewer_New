@@ -6,7 +6,7 @@
       <Value Profile="(Default)">\\wpdevapppfc2016\WY\Logs</Value>
     </Setting>
     <Setting Name="OfflineLogFolderPath" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\WY\Logs</Value>
+      <Value Profile="(Default)">C:\IHV Company\Logs</Value>
     </Setting>
     <Setting Name="MainWindowPlacement" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
@@ -28,6 +28,9 @@
     </Setting>
     <Setting Name="LogEntryMessageViewRowHeight" Type="System.Double" Scope="User">
       <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="UpgradeSettings" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

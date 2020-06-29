@@ -77,7 +77,6 @@ namespace LogViewer.Models
 
         #region Fields
         private string _name;
-        private static int _suffixInt = 0;
         private bool _isEdited;
         private bool _isLoading;
         #endregion
@@ -440,8 +439,7 @@ namespace LogViewer.Models
 
         private void SetName(string suggestedName)
         {
-            //TODO: Come up with better way of getting unique log view name. If user runs multiple instances in single day, could get duplicates with the method below.
-            Name = $"{suggestedName}_{++_suffixInt}_{DateTime.Now.ToShortDateString()}";
+            Name = $"{suggestedName}_{DateTime.Now.Ticks}";
         }
         #endregion
     }

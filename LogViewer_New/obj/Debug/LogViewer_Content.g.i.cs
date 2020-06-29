@@ -8,10 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/icons8-bug-50.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/icons8-cancel-48.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/icons8-error-48.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/icons8-help-50.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/icons8-info-50.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("splashscreen1.png")]
 
 

@@ -64,7 +64,7 @@ namespace LogViewer.Helpers
         /// <summary>
         /// The company which developed the application obtained from the assembly.
         /// </summary>
-        public string Company { get; } = "Weyerhaeuser";
+        public string Company { get; } = "IHV Company";
         /// <summary>
         /// The application <see cref="AppStandards.Logging.Log"/>.
         /// </summary>
