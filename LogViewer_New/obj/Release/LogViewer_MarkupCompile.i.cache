@@ -9,12 +9,12 @@ LogViewer
 none
 false
 TRACE
-C:\Source\Personal\LogViewer_New\LogViewer_New\App.xaml
-81517964815
+
+91886026931
 
 52-519086126
 471763674628
-Views\DatabasesView.xaml;Views\FilterView.xaml;Views\LaunchView.xaml;Views\LogViewDetailsDialog.xaml;Views\LogViewManagementView.xaml;Views\LogEntriesView.xaml;Views\MainWindow.xaml;Views\HomeView.xaml;
-
+App.xaml;Views\DatabasesView.xaml;Views\FilterView.xaml;Views\LaunchView.xaml;Views\LogViewDetailsDialog.xaml;Views\LogViewManagementView.xaml;Views\LogEntriesView.xaml;Views\MainWindow.xaml;Views\HomeView.xaml;
+splashscreen1.png
 False
 

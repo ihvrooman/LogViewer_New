@@ -34,7 +34,7 @@ namespace LogViewer.Services
       ,[DeviceId]
       ,[UserID]
   FROM [JetExApp].[dbo].[EventLogJetX]
-  ORDER BY [Timestamp] DESC";
+  ORDER BY [Timestamp]";
             /*@"
 SELECT 
     [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[OBJECT_NAME],
