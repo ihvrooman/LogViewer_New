@@ -23,7 +23,9 @@
     <Grid>
         <Grid.Resources>
             <ResourceDictionary>
-                <CollectionViewSource x:Key="LogEntriesSource" Source="{Binding LogEntries}" />
+                <CollectionViewSource
+                    x:Key="LogEntriesSource"
+                    Source="{Binding LogEntries}" />
                 <helpers:LogMessageTypeToIndicator x:Key="LogMessageTypeToIndicator" />
             </ResourceDictionary>
         </Grid.Resources>
@@ -39,7 +41,9 @@
                 <Style TargetType="TextBlock">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding Count, Source={StaticResource LogEntriesSource}}" Value="0">
+                        <DataTrigger
+                            Binding="{Binding Count, Source={StaticResource LogEntriesSource}}"
+                            Value="0">
                             <Setter Property="Visibility" Value="Visible" />
                         </DataTrigger>
                     </Style.Triggers>
@@ -59,10 +63,14 @@
             SelectedItem="{Binding SelectedLogEntry}"
             SelectionMode="Single">
             <DataGrid.Resources>
-                <SolidColorBrush x:Key="Brush" Color="Transparent" />
+                <SolidColorBrush
+                    x:Key="Brush"
+                    Color="Transparent" />
             </DataGrid.Resources>
             <DataGrid.RowStyle>
-                <Style BasedOn="{StaticResource MetroDataGridRow}" TargetType="DataGridRow">
+                <Style
+                    BasedOn="{StaticResource MetroDataGridRow}"
+                    TargetType="DataGridRow">
                     <Setter Property="Foreground" Value="#FFBBB8B8" />
                     <Setter Property="Background" Value="{StaticResource Brush}" />
                     <Setter Property="MaxHeight" Value="150" />
@@ -82,7 +90,9 @@
                                             To="Yellow"
                                             Duration="0:0:3">
                                             <ColorAnimation.EasingFunction>
-                                                <PowerEase EasingMode="EaseInOut" Power="9" />
+                                                <PowerEase
+                                                    EasingMode="EaseInOut"
+                                                    Power="9" />
                                             </ColorAnimation.EasingFunction>
                                         </ColorAnimation>
                                     </Storyboard>
@@ -150,7 +160,9 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Width="800" Header="Message">
+                <DataGridTemplateColumn
+                    Width="800"
+                    Header="Message">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock

@@ -17,7 +17,9 @@
         <Style TargetType="Controls:NumericUpDown">
             <Setter Property="StringFormat" Value="{}{0:00}" />
         </Style>
-        <Style x:Key="MillisecondPickerStyle" TargetType="Controls:NumericUpDown">
+        <Style
+            x:Key="MillisecondPickerStyle"
+            TargetType="Controls:NumericUpDown">
             <Setter Property="StringFormat" Value="{}{0:0000}" />
         </Style>
         <appStandardsConverters:BooleanToVisibility x:Key="AppStandardsBooleanToVisibility" />
@@ -28,7 +30,9 @@
         HorizontalScrollBarVisibility="Auto"
         VerticalScrollBarVisibility="Disabled">
         <StackPanel Orientation="Horizontal">
-            <Controls:MetroHeader Margin="5,0,5,5" Header="Date Range">
+            <Controls:MetroHeader
+                Margin="5,0,5,5"
+                Header="Date Range">
                 <DockPanel>
                     <StackPanel
                         Margin="0,5,0,5"
@@ -38,7 +42,9 @@
                             Margin="0,0,5,0"
                             Content="Quick select"
                             IsChecked="{Binding UseQuickDateRange}" />
-                        <RadioButton Content="Specify" IsChecked="{Binding SpecifyDateRange}" />
+                        <RadioButton
+                            Content="Specify"
+                            IsChecked="{Binding SpecifyDateRange}" />
                     </StackPanel>
                     <ComboBox
                         DisplayMemberPath="Name"
@@ -46,7 +52,9 @@
                         ItemsSource="{Binding QuickDateRanges}"
                         SelectedItem="{Binding SelectedQuickDateRange}"
                         Visibility="{Binding UseQuickDateRange, Converter={StaticResource AppStandardsBooleanToVisibility}}" />
-                    <Grid DockPanel.Dock="Top" Visibility="{Binding UseQuickDateRange, Converter={StaticResource AppStandardsBooleanToVisibility}, ConverterParameter=Invert}">
+                    <Grid
+                        DockPanel.Dock="Top"
+                        Visibility="{Binding UseQuickDateRange, Converter={StaticResource AppStandardsBooleanToVisibility}, ConverterParameter=Invert}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="35" />
                             <ColumnDefinition Width="115" />
@@ -187,8 +195,12 @@
                 BorderBrush="{DynamicResource AccentColorBrush}"
                 BorderThickness="1,0,0,0" />
 
-            <Controls:MetroHeader Margin="5,0,5,5" Header="Log Message Type">
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <Controls:MetroHeader
+                Margin="5,0,5,5"
+                Header="Log Message Type">
+                <ScrollViewer
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto">
                     <DockPanel LastChildFill="False">
                         <Controls:ToggleSwitch
                             Margin="5"
@@ -259,7 +271,9 @@
                 BorderBrush="{DynamicResource AccentColorBrush}"
                 BorderThickness="1,0,0,0" />
 
-            <Controls:MetroHeader Margin="5,0,5,5" Header="User Information">
+            <Controls:MetroHeader
+                Margin="5,0,5,5"
+                Header="User Information">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100" />
@@ -351,15 +365,17 @@
                 BorderBrush="{DynamicResource AccentColorBrush}"
                 BorderThickness="1,0,0,0" />
 
-            <Controls:MetroHeader Margin="5,0,5,5" Header="Clear">
+            <Controls:MetroHeader
+                Margin="5,0,5,5"
+                Header="Clear">
                 <Button
                     Width="100"
                     Height="35"
                     VerticalAlignment="Top"
+                    Controls:ButtonHelper.PreserveTextCase="True"
                     Command="{Binding ClearFiltersCommand}"
                     Content="Clear Filters"
-                    Style="{DynamicResource SquareButtonStyle}" 
-                    Controls:ButtonHelper.PreserveTextCase="True"/>
+                    Style="{DynamicResource SquareButtonStyle}" />
             </Controls:MetroHeader>
         </StackPanel>
     </ScrollViewer>

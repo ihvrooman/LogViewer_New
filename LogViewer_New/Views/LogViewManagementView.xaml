@@ -65,7 +65,9 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            --><!--  First row  --><!--
+        -->
+        <!--  First row  -->
+        <!--
             <Border
                 Grid.Row="0"
                 Grid.Column="0"
@@ -95,7 +97,9 @@
                     Text="Filtered" />
             </Border>
 
-            --><!--  Second row  --><!--
+        -->
+        <!--  Second row  -->
+        <!--
             <Border
                 Grid.Row="1"
                 Grid.Column="0"
@@ -124,7 +128,9 @@
                     Text="1" />
             </Border>
 
-            --><!--  Third row  --><!--
+        -->
+        <!--  Third row  -->
+        <!--
             <Border
                 Grid.Row="2"
                 Grid.Column="0"
@@ -153,7 +159,9 @@
                     Text="1" />
             </Border>
 
-            --><!--  Fourth row  --><!--
+        -->
+        <!--  Fourth row  -->
+        <!--
             <Border
                 Grid.Row="3"
                 Grid.Column="0"
@@ -182,7 +190,9 @@
                     Text="1" />
             </Border>
 
-            --><!--  Fifth row  --><!--
+        -->
+        <!--  Fifth row  -->
+        <!--
             <Border
                 Grid.Row="4"
                 Grid.Column="0"
@@ -211,7 +221,9 @@
                     Text="1" />
             </Border>
 
-            --><!--  Sixth row  --><!--
+        -->
+        <!--  Sixth row  -->
+        <!--
             <Border
                 Grid.Row="5"
                 Grid.Column="0"

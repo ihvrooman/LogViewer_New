@@ -398,7 +398,8 @@ namespace LogViewer.ViewModels
                         break;
                     case LaunchViewDisplayOptions.ToolbarWidth:
                         LaunchViewHorizantalContentAlignment = HorizontalAlignment.Left;
-                        LaunchViewWidth = Convert.ToInt32(Application.Current.MainWindow.Width - LogViewManagementColumnWidth.Value - 5);
+                        LaunchViewWidth = Convert.ToInt32(Application.Current.MainWindow.ActualWidth);
+                        //LaunchViewWidth = Convert.ToInt32(Application.Current.MainWindow.ActualWidth - LogViewManagementColumnWidth.Value - 5);
                         break;
                     default:
                         LaunchViewHorizantalContentAlignment = HorizontalAlignment.Stretch;
