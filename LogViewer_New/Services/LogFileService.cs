@@ -351,7 +351,7 @@ namespace LogViewer.Services
                 }
 
                 //Parse time stamp
-                var timeStamp = DateTime.ParseExact(timeStampString, "yyyy-MM-dd HH:mm:ss.ffff", CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
+                var timeStamp = DateTime.ParseExact(timeStampString, "yyyy-MM-dd HH:mm:ss.ffff", CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal);
 
                 return new LogEntry(type, timeStamp, message, parentLogFile, logEntryIdentifier, username, computerName);
             }

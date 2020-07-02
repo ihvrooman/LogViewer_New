@@ -117,4 +117,3 @@ C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Release\LogViewer.csproj.Core
 C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Release\LogViewer.csproj.CopyComplete
 C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Release\LogViewer.exe
 C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Release\LogViewer.pdb
-C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Release\LogViewer.csprojAssemblyReference.cache

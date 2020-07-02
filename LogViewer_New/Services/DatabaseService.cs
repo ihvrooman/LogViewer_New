@@ -33,7 +33,8 @@ namespace LogViewer.Services
       ,[Timestamp]
       ,[DeviceId]
       ,[UserID]
-  FROM [JetExApp].[dbo].[EventLogJetX]";
+  FROM [JetExApp].[dbo].[EventLogJetX]
+  ORDER BY [Timestamp] DESC";
             /*@"
 SELECT 
     [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[OBJECT_NAME],
@@ -255,8 +256,8 @@ ORDER BY [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[TimeStamp]";*/
         private static LogEntry ParseDatabaseLogEntry(SqlDataReader sqlDataReader, string computerName, ILogEntriesSource logEntriesSource, string logEntryIdentifier)
         {
             //TODO: Join in device table to get device info
-            var logMessageType = ParseDatabaseLogEntryType(sqlDataReader.GetString(4));
-            var timeStamp = sqlDataReader.GetDateTime(5).ToLocalTime();
+            var logMessageType = ParseDatabaseLogEntryType(sqlDataReader.GetInt32(3).ToString());
+            var timeStamp = sqlDataReader.GetDateTime(4).ToUniversalTime();
             var logMessage = $"Code: \"{sqlDataReader["Code"]}\" | Message: \"{sqlDataReader["Message"]}\" | Details: \"{sqlDataReader["MessageDetails"]}\" | DeviceId: \"{sqlDataReader["DeviceId"]}\" | UserId: \"{sqlDataReader["UserId"]}\"";
             /* $"Object: \"{sqlDataReader["OBJECT_NAME"]}\" | Section: \"{sqlDataReader["Error_Section"]}\" | Message: \"{sqlDataReader["ERROR_MESSAGE"]}\"";*/
             return new LogEntry(logMessageType, timeStamp, logMessage, logEntriesSource, logEntryIdentifier, computername: computerName);
