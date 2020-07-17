@@ -17,6 +17,8 @@ namespace LogViewer.Services
     {
         #region Constants
         public const string DatabaseAndTableName = "EventLogConnectX or EventLogJetX"; //"[SOADB].[dbo].[Local_SSI_ErrorLogDetail]";
+        private const string _databaseNameFormat = "'{SQLInstanceName}.{DatabaseName}.{SQLUsername}.{SQLPassword}'";
+        private const string _databaseNameFormatNote = "Note: The username and password are only required if using SQL authentication.";
         private const string sqlCommandText = @"SELECT [Code]
       ,[Message]
       ,[MessageDetails]
@@ -35,13 +37,13 @@ namespace LogViewer.Services
       ,[UserID]
   FROM [JetExApp].[dbo].[EventLogJetX]
   ORDER BY [Timestamp]";
-            /*@"
+        /*@"
 SELECT 
-    [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[OBJECT_NAME],
-    [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[Error_Section],
-	[SOADB].[dbo].[Local_SSI_ErrorLogDetail].[ERROR_MESSAGE],
-	[SOADB].[dbo].[Local_SSI_ErrorLogDetail].[TimeStamp],
-	[SOADB].[dbo].[Local_SSI_ErrorSeverityLevel].[Severity_Level_Desc]
+[SOADB].[dbo].[Local_SSI_ErrorLogDetail].[OBJECT_NAME],
+[SOADB].[dbo].[Local_SSI_ErrorLogDetail].[Error_Section],
+[SOADB].[dbo].[Local_SSI_ErrorLogDetail].[ERROR_MESSAGE],
+[SOADB].[dbo].[Local_SSI_ErrorLogDetail].[TimeStamp],
+[SOADB].[dbo].[Local_SSI_ErrorSeverityLevel].[Severity_Level_Desc]
 FROM[SOADB].[dbo].[Local_SSI_ErrorLogDetail]
 WITH (NOLOCK)
 INNER JOIN [SOADB].[dbo].[Local_SSI_ErrorSeverityLevel]
@@ -60,7 +62,7 @@ ORDER BY [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[TimeStamp]";*/
                     serviceOperationHelper.LogServiceOperation(ServiceOperationStatus.Attempting);
 
                     var numberOfOldLogEntries = logEntriesSourceCache.Keys.Where(k => k.Contains(database.Identifier)).Count();
-                    var sqlConnection = new SqlConnection(GetConnectionString(database.Name));
+                    var sqlConnection = new SqlConnection(new AddDatabaseInfo(database.Name).ToConnectionString());
                     sqlConnection.Open();
                     using (SqlCommand sqlCommand = new SqlCommand(sqlCommandText, sqlConnection))
                     {
@@ -146,7 +148,7 @@ ORDER BY [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[TimeStamp]";*/
 
             while (keepPrompting)
             {
-                var newDatabaseName = dialogCoordinator.ShowModalInputExternal(dialogContext, "Add Database", "Enter the database name in the format '{SQLInstanceName}.{DatabaseName}':", dialogSettings1)?.ToUpper();
+                var newDatabaseName = dialogCoordinator.ShowModalInputExternal(dialogContext, "Add Database", $"Enter the database name in the format {_databaseNameFormat}.{Environment.NewLine + _databaseNameFormatNote}", dialogSettings1);
                 dialogSettings1.DefaultText = newDatabaseName;
                 if (newDatabaseName == null)
                 {
@@ -163,64 +165,68 @@ ORDER BY [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[TimeStamp]";*/
                 }
                 else if (!newDatabaseName.Contains(".") || newDatabaseName.Contains("{") || newDatabaseName.Contains("}"))
                 {
-                    await dialogCoordinator.ShowMessageAsync(dialogContext, "Invalid Database Name", "The new database name must be in the format '{SQLInstanceName}.{DatabaseName}'." + Environment.NewLine + "Example: MainServer\\SQLEXPRESS.CustomerInfo");
-                }
-                else if (SettingsService.SettingsContainsDatabaseName(newDatabaseName))
-                {
-                    await dialogCoordinator.ShowMessageAsync(dialogContext, "Database Already Added", $"Database \"{newDatabaseName}\" has already been added.");
-                    keepPrompting = false;
+                    await dialogCoordinator.ShowMessageAsync(dialogContext, "Invalid Database Name", $"The new database name must be in the format {_databaseNameFormat}.{Environment.NewLine + _databaseNameFormatNote}" + Environment.NewLine + "Example: MainServer\\SQLEXPRESS.CustomerInfo");
                 }
                 else
                 {
-                    //Show progress dialog while searching for new database
-                    var progressController = await dialogCoordinator.ShowProgressAsync(dialogContext, "Looking for Database", $"Trying to find database \"{newDatabaseName}\"...");
-                    progressController.SetIndeterminate();
-                    var databaseExists = false;
-                    await Task.Run(() =>
+                    var addDatabaseInfo = new AddDatabaseInfo(newDatabaseName);
+                    if (SettingsService.SettingsContainsDatabaseName(addDatabaseInfo.ToFormattedString()))
                     {
-                        databaseExists = TestDatabaseConnection(newDatabaseName);
-                    });
-                    await progressController.CloseAsync();
-
-                    //If database can't be found, ask user if they want to continue adding database
-                    var dialogSettings = new MetroDialogSettings()
-                    {
-                        AffirmativeButtonText = "Yes",
-                        NegativeButtonText = "No",
-                        DefaultButtonFocus = MessageDialogResult.Affirmative,
-                    };
-                    if (!databaseExists && await dialogCoordinator.ShowMessageAsync(dialogContext, "Database Not Found", $"The database \"{newDatabaseName}\" could not be found. Would you still like to add it?", MessageDialogStyle.AffirmativeAndNegative, dialogSettings) != MessageDialogResult.Affirmative)
-                    {
-                        return;
+                        await dialogCoordinator.ShowMessageAsync(dialogContext, "Database Already Added", $"Database \"{newDatabaseName}\" has already been added.");
+                        keepPrompting = false;
                     }
-
-                    var newDatabase = new Database(newDatabaseName);
-                    var serviceOperationHelper = new ServiceOperationHelper(typeof(Database), Plurality.Single, ServiceOperation.Add, "databases source cache", newDatabaseName);
-
-                    await Task.Run(() =>
+                    else
                     {
-                        try
+                        //Show progress dialog while searching for new database
+                        var progressController = await dialogCoordinator.ShowProgressAsync(dialogContext, "Looking for Database", $"Trying to find database \"{newDatabaseName}\"...");
+                        progressController.SetIndeterminate();
+                        var databaseExists = false;
+                        await Task.Run(() =>
                         {
-                            serviceOperationHelper.LogServiceOperation(ServiceOperationStatus.Attempting);
-                            databasesSourceCache.AddOrUpdate(newDatabase);
-                            serviceOperationHelper.LogServiceOperation(ServiceOperationStatus.Succeeded);
-                        }
-                        catch (Exception ex)
+                            databaseExists = TestDatabaseConnection(addDatabaseInfo.ToConnectionString());
+                        });
+                        await progressController.CloseAsync();
+
+                        //If database can't be found, ask user if they want to continue adding database
+                        var dialogSettings = new MetroDialogSettings()
                         {
-                            serviceOperationHelper.LogServiceOperation(ex.Message);
+                            AffirmativeButtonText = "Yes",
+                            NegativeButtonText = "No",
+                            DefaultButtonFocus = MessageDialogResult.Affirmative,
+                        };
+                        if (!databaseExists && await dialogCoordinator.ShowMessageAsync(dialogContext, "Database Not Found", $"The database \"{newDatabaseName}\" could not be found. Would you still like to add it?", MessageDialogStyle.AffirmativeAndNegative, dialogSettings) != MessageDialogResult.Affirmative)
+                        {
+                            return;
                         }
-                    });
 
-                    keepPrompting = false;
+                        var newDatabase = new Database(addDatabaseInfo.ToFormattedString());
+                        var serviceOperationHelper = new ServiceOperationHelper(typeof(Database), Plurality.Single, ServiceOperation.Add, "databases source cache", addDatabaseInfo.ToFormattedString());
 
-                    if (serviceOperationHelper.ServiceOperationResult.OperationSuceeded)
-                    {
-                        serviceOperationHelper.ServiceOperationResult = await SettingsService.AddOrUpdateDatabase(newDatabase, true);
-                    }
+                        await Task.Run(() =>
+                        {
+                            try
+                            {
+                                serviceOperationHelper.LogServiceOperation(ServiceOperationStatus.Attempting);
+                                databasesSourceCache.AddOrUpdate(newDatabase);
+                                serviceOperationHelper.LogServiceOperation(ServiceOperationStatus.Succeeded);
+                            }
+                            catch (Exception ex)
+                            {
+                                serviceOperationHelper.LogServiceOperation(ex.Message);
+                            }
+                        });
 
-                    if (serviceOperationHelper.ServiceOperationResult.OperationFailed)
-                    {
-                        await serviceOperationHelper.ServiceOperationResult.ShowUserErrorMessage(dialogCoordinator, dialogContext);
+                        keepPrompting = false;
+
+                        if (serviceOperationHelper.ServiceOperationResult.OperationSuceeded)
+                        {
+                            serviceOperationHelper.ServiceOperationResult = await SettingsService.AddOrUpdateDatabase(newDatabase, true);
+                        }
+
+                        if (serviceOperationHelper.ServiceOperationResult.OperationFailed)
+                        {
+                            await serviceOperationHelper.ServiceOperationResult.ShowUserErrorMessage(dialogCoordinator, dialogContext);
+                        }
                     }
                 }
             }
@@ -228,19 +234,11 @@ ORDER BY [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[TimeStamp]";*/
         #endregion
 
         #region Private methods
-        private static string GetConnectionString(string databaseName)
-        {
-            var split = databaseName.Split('.');
-            var SQLInstanceName = split[0];
-            databaseName = split[1];
-            return $"Data Source={SQLInstanceName};Integrated Security=true;Initial Catalog={databaseName}";
-        }
-
-        private static bool TestDatabaseConnection(string databaseName)
+        private static bool TestDatabaseConnection(string connectionString)
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(GetConnectionString(databaseName)))
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
                     connection.Close();

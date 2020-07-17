@@ -185,6 +185,7 @@
     <Compile Include="Helpers\StringToTitleConverter.cs" />
     <Compile Include="Helpers\MediatorMessages.cs" />
     <Compile Include="Helpers\CommonXmlAttributeNames.cs" />
+    <Compile Include="Models\AddDatabaseInfo.cs" />
     <Compile Include="Models\LaunchViewDisplayOptions.cs" />
     <Compile Include="Models\LogViewDetails.cs" />
     <Compile Include="Models\QuickDateRange.cs" />
