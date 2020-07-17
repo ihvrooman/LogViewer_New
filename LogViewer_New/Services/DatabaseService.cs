@@ -19,24 +19,24 @@ namespace LogViewer.Services
         public const string DatabaseAndTableName = "EventLogConnectX or EventLogJetX"; //"[SOADB].[dbo].[Local_SSI_ErrorLogDetail]";
         private const string _databaseNameFormat = "'{SQLInstanceName}.{DatabaseName}.{SQLUsername}.{SQLPassword}'";
         private const string _databaseNameFormatNote = "Note: The username and password are only required if using SQL authentication.";
-        private const string sqlCommandText = @"SELECT [EventId]
-	  ,[Code]
+        private const string sqlCommandText = @"SELECT [Code]
       ,[Message]
       ,[MessageDetails]
       ,[EventLevel]
       ,[Timestamp]
       ,[DeviceId]
       ,[UserID]
+      ,[EventId]
   FROM [JetExApp].[dbo].[EventLogConnectX]
   UNION
-  SELECT [EventId]
-	  ,[Code]
+  SELECT [Code]
       ,[Message]
       ,[MessageDetails]
       ,[EventLevel]
       ,[Timestamp]
       ,[DeviceId]
       ,[UserID]
+      ,[EventId]
   FROM [JetExApp].[dbo].[EventLogJetX]
   ORDER BY [Timestamp], [EventId]";
         /*@"
