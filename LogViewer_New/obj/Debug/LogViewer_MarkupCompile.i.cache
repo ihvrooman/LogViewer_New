@@ -16,5 +16,5 @@ DEBUG;TRACE
 471763674628
 App.xaml;Views\DatabasesView.xaml;Views\FilterView.xaml;Views\LaunchView.xaml;Views\LogViewDetailsDialog.xaml;Views\LogViewManagementView.xaml;Views\LogEntriesView.xaml;Views\MainWindow.xaml;Views\HomeView.xaml;
 splashscreen1.png
-True
+False
 
