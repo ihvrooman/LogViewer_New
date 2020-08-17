@@ -25,7 +25,7 @@ namespace LogViewer.Services
       ,[EventLevel]
       ,[Timestamp]
       ,[DeviceId]
-      ,[UserID]
+      ,[Username]
       ,[EventId]
   FROM [JetExApp].[dbo].[EventLogConnectX]
   UNION
@@ -35,7 +35,7 @@ namespace LogViewer.Services
       ,[EventLevel]
       ,[Timestamp]
       ,[DeviceId]
-      ,[UserID]
+      ,[Username]
       ,[EventId]
   FROM [JetExApp].[dbo].[EventLogJetX]
   ORDER BY [Timestamp], [EventId]";
