@@ -233,3 +233,4 @@ C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Debug\LogViewer.csproj.CoreCo
 C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Debug\LogViewer.csproj.CopyComplete
 C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Debug\LogViewer.exe
 C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Debug\LogViewer.pdb
+C:\Source\Personal\LogViewer_New\LogViewer_New\obj\Debug\LogViewer.csprojAssemblyReference.cache

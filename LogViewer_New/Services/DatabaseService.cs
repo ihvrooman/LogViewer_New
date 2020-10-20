@@ -19,7 +19,7 @@ namespace LogViewer.Services
         public const string DatabaseAndTableName = "EventLogConnectX or EventLogJetX"; //"[SOADB].[dbo].[Local_SSI_ErrorLogDetail]";
         private const string _databaseNameFormat = "'{SQLInstanceName}.{DatabaseName}.{SQLUsername}.{SQLPassword}'";
         private const string _databaseNameFormatNote = "Note: The username and password are only required if using SQL authentication.";
-        private const string sqlCommandText = @"SELECT [Code]
+        private const string unformattedSQLCommandText = @"SELECT [Code]
       ,[Message]
       ,[MessageDetails]
       ,[EventLevel]
@@ -27,7 +27,7 @@ namespace LogViewer.Services
       ,[DeviceId]
       ,[Username]
       ,[EventId]
-  FROM [JetExApp].[dbo].[EventLogConnectX]
+  FROM [{0}].[dbo].[EventLogConnectX]
   UNION
   SELECT [Code]
       ,[Message]
@@ -37,7 +37,7 @@ namespace LogViewer.Services
       ,[DeviceId]
       ,[Username]
       ,[EventId]
-  FROM [JetExApp].[dbo].[EventLogJetX]
+  FROM [{0}].[dbo].[EventLogJetX]
   ORDER BY [Timestamp], [EventId]";
         /*@"
 SELECT 
@@ -64,9 +64,10 @@ ORDER BY [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[TimeStamp]";*/
                     serviceOperationHelper.LogServiceOperation(ServiceOperationStatus.Attempting);
 
                     var numberOfOldLogEntries = logEntriesSourceCache.Keys.Where(k => k.Contains(database.Identifier)).Count();
-                    var sqlConnection = new SqlConnection(new AddDatabaseInfo(database.Name).ToConnectionString());
+                    var addDatabaseInfo = new AddDatabaseInfo(database.Name);
+                    var sqlConnection = new SqlConnection(addDatabaseInfo.ToConnectionString());
                     sqlConnection.Open();
-                    using (SqlCommand sqlCommand = new SqlCommand(sqlCommandText, sqlConnection))
+                    using (SqlCommand sqlCommand = new SqlCommand(GetSQLCommandText(addDatabaseInfo.DatabaseName), sqlConnection))
                     {
                         using (var sqlDataReader = sqlCommand.ExecuteReader())
                         {
@@ -292,6 +293,11 @@ ORDER BY [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[TimeStamp]";*/
                 default:
                     return LogMessageType.Unknown;
             }
+        }
+
+        private static string GetSQLCommandText(string databaseName)
+        {
+            return string.Format(unformattedSQLCommandText, databaseName);
         }
         #endregion
     }
