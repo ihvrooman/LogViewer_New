@@ -1,0 +1,1172 @@
+﻿<UserControl
+    x:Class="LogViewer.Views.LaunchView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="clr-namespace:LogViewer.Helpers"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:local="clr-namespace:LogViewer.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:LogViewer.Models"
+    xmlns:viewModels="clr-namespace:LogViewer.ViewModels"
+    Name="Launch_View"
+    Dialog:DialogParticipation.Register="{Binding}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Loaded="LaunchView_Loaded"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <!--  Pin menu item style  -->
+            <Style
+                x:Key="PinMenuItemStyle"
+                BasedOn="{StaticResource MetroMenuItem}"
+                TargetType="{x:Type MenuItem}">
+                <Setter Property="Icon">
+                    <Setter.Value>
+                        <iconPacks:PackIconMaterialLight
+                            Margin="5,0,0,0"
+                            Kind="Pin" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Header" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.DataContext.IsPinned, Converter={StaticResource IsPinnedToMenuTextConverter}}" />
+                <Setter Property="Command" Value="{Binding DataContext.ToggleOpenableObjectIsPinnedCommand, Source={x:Reference Launch_View}}" />
+                <Setter Property="CommandParameter" Value="{Binding}" />
+                <Style.Triggers>
+                    <DataTrigger
+                        Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContextMenu}}, Path=PlacementTarget.DataContext.IsPinned}"
+                        Value="True">
+                        <Setter Property="Icon">
+                            <Setter.Value>
+                                <iconPacks:PackIconMaterialLight
+                                    Margin="5,0,0,0"
+                                    Kind="PinOff" />
+                            </Setter.Value>
+                        </Setter>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <!--  Context menus  -->
+            <ContextMenu x:Key="LogViewContextMenu">
+                <MenuItem
+                    Command="{Binding DataContext.OpenOpenableObjectCommand, Source={x:Reference Launch_View}}"
+                    CommandParameter="{Binding}"
+                    Header="Open" />
+                <MenuItem
+                    Command="{Binding DataContext.OpenLogViewDetailsCommand, Source={x:Reference Launch_View}}"
+                    CommandParameter="{Binding}"
+                    Header="View details" />
+                <Separator />
+                <MenuItem Style="{StaticResource PinMenuItemStyle}" />
+                <MenuItem
+                    Command="{Binding DataContext.RenameLogViewCommand, Source={x:Reference Launch_View}}"
+                    CommandParameter="{Binding}"
+                    Header="Rename" />
+                <Separator />
+                <MenuItem
+                    Command="{Binding DataContext.DeleteLogViewCommand, Source={x:Reference Launch_View}}"
+                    CommandParameter="{Binding}"
+                    Header="Delete">
+                    <MenuItem.Icon>
+                        <iconPacks:PackIconModern
+                            Margin="5,0,0,0"
+                            Kind="Delete" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
+
+            <ContextMenu x:Key="LogFilesContextMenu">
+                <MenuItem
+                    Command="{Binding DataContext.OpenOpenableObjectCommand, Source={x:Reference Launch_View}}"
+                    CommandParameter="{Binding}"
+                    Header="Open" />
+                <Separator />
+                <MenuItem Style="{StaticResource PinMenuItemStyle}" />
+            </ContextMenu>
+
+            <ContextMenu x:Key="DatabaseContextMenu">
+                <MenuItem
+                    Command="{Binding DataContext.OpenOpenableObjectCommand, Source={x:Reference Launch_View}}"
+                    CommandParameter="{Binding}"
+                    Header="Open" />
+                <Separator />
+                <MenuItem Style="{StaticResource PinMenuItemStyle}" />
+                <Separator />
+                <MenuItem
+                    Command="{Binding DataContext.RemoveDatabaseCommand, Source={x:Reference Launch_View}}"
+                    CommandParameter="{Binding}"
+                    Header="Delete">
+                    <MenuItem.Icon>
+                        <iconPacks:PackIconModern
+                            Margin="5,0,0,0"
+                            Kind="Delete" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
+
+            <!--  Wrap panel template  -->
+            <ItemsPanelTemplate x:Key="WrapPanelTemplate">
+                <WrapPanel
+                    Margin="0,10,0,0"
+                    Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+
+            <!--  Tile templates  -->
+            <DataTemplate x:Key="LogViewTileTemplate">
+                <Controls:Tile
+                    Width="450"
+                    Padding="0"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
+                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenableObjectCommand}"
+                    CommandParameter="{Binding}"
+                    ContextMenu="{StaticResource LogViewContextMenu}">
+                    <DockPanel>
+                        <TextBlock
+                            x:Name="LogViewNameTextblock"
+                            MaxWidth="352"
+                            VerticalAlignment="Center"
+                            DockPanel.Dock="Right"
+                            FontSize="16"
+                            Text="{Binding Name}"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="Wrap" />
+                        <iconPacks:PackIconMaterial
+                            Width="40"
+                            Height="40"
+                            Margin="20,0,20,0"
+                            VerticalAlignment="Center"
+                            DockPanel.Dock="Left"
+                            Kind="ViewHeadline" />
+                    </DockPanel>
+                </Controls:Tile>
+            </DataTemplate>
+            <DataTemplate x:Key="DatabaseTileTemplate">
+                <Controls:Tile
+                    Width="450"
+                    Padding="0"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
+                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenableObjectCommand}"
+                    CommandParameter="{Binding}"
+                    ContextMenu="{StaticResource DatabaseContextMenu}">
+                    <DockPanel>
+                        <TextBlock
+                            x:Name="LogViewNameTextblock"
+                            MaxWidth="352"
+                            VerticalAlignment="Center"
+                            DockPanel.Dock="Right"
+                            FontSize="16"
+                            Text="{Binding Name}"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="Wrap" />
+                        <iconPacks:PackIconMaterial
+                            Width="40"
+                            Height="40"
+                            Margin="20,0,20,0"
+                            VerticalAlignment="Center"
+                            DockPanel.Dock="Left"
+                            Kind="Database" />
+                    </DockPanel>
+                </Controls:Tile>
+            </DataTemplate>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <UserControl.DataContext>
+        <viewModels:LaunchViewModel />
+    </UserControl.DataContext>
+
+    <DockPanel>
+        <ListBox
+            Width="165"
+            Padding="0,40,0,40"
+            Background="{DynamicResource AccentColorBrush2}"
+            DockPanel.Dock="Left"
+            SelectedIndex="{Binding SelectedMenuItemIndex}">
+            <ListBoxItem
+                Margin="0,0,0,30"
+                Padding="15,10,15,10"
+                HorizontalContentAlignment="Left"
+                Background="Transparent"
+                Visibility="{Binding CanCloseLaunchView, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <iconPacks:PackIconMaterialLight
+                    Width="30"
+                    Height="30"
+                    Kind="ArrowLeftCircle" />
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseUp">
+                        <i:InvokeCommandAction Command="{Binding RequestToggleLaunchViewIsOpenCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ListBoxItem>
+            <ListBoxItem
+                Padding="15,10,15,10"
+                HorizontalContentAlignment="Left"
+                Background="Transparent">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterialLight
+                        Width="30"
+                        Height="30"
+                        Margin="0,0,10,0"
+                        Kind="Home" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="16"
+                        Text="Home" />
+                </StackPanel>
+            </ListBoxItem>
+            <ListBoxItem
+                Padding="15,10,15,10"
+                HorizontalContentAlignment="Left"
+                Background="Transparent">
+                <DockPanel Width="135">
+                    <iconPacks:PackIconFontAwesome
+                        Width="30"
+                        Height="30"
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Left"
+                        Kind="FolderOpenRegular" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Left"
+                        FontSize="16"
+                        Text="Open Log View"
+                        TextWrapping="Wrap" />
+                </DockPanel>
+            </ListBoxItem>
+            <ListBoxItem
+                Padding="15,10,15,10"
+                HorizontalContentAlignment="Left"
+                Background="Transparent">
+                <DockPanel Width="135">
+                    <iconPacks:PackIconFontAwesome
+                        Width="30"
+                        Height="30"
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Left"
+                        Kind="FolderOpenRegular" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Left"
+                        FontSize="16"
+                        Text="Open Log File"
+                        TextWrapping="Wrap" />
+                </DockPanel>
+            </ListBoxItem>
+            <ListBoxItem
+                Padding="15,10,15,10"
+                HorizontalContentAlignment="Left"
+                Background="Transparent">
+                <DockPanel Width="135">
+                    <iconPacks:PackIconFontAwesome
+                        Width="30"
+                        Height="30"
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Left"
+                        Kind="FolderOpenRegular" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Left"
+                        FontSize="16"
+                        Text="Open Database"
+                        TextWrapping="Wrap" />
+                </DockPanel>
+            </ListBoxItem>
+            <ListBoxItem
+                Padding="15,10,15,10"
+                HorizontalContentAlignment="Left"
+                Background="Transparent">
+                <DockPanel Width="135">
+                    <iconPacks:PackIconMaterial
+                        Width="30"
+                        Height="30"
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Left"
+                        Kind="Database" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Left"
+                        FontSize="16"
+                        Text="Database Management"
+                        TextWrapping="Wrap" />
+                </DockPanel>
+            </ListBoxItem>
+        </ListBox>
+        <DockPanel
+            Margin="10,40,10,10"
+            DockPanel.Dock="Right">
+            <!--  Search  -->
+            <DockPanel
+                Margin="0,0,0,10"
+                DockPanel.Dock="Top">
+                <Popup
+                    x:Name="popup"
+                    Width="450"
+                    HorizontalAlignment="Stretch"
+                    AllowsTransparency="True"
+                    DockPanel.Dock="Bottom"
+                    IsOpen="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.ShowSearchPopup}"
+                    Placement="Bottom"
+                    PlacementTarget="{Binding ElementName=SearchTextbox}"
+                    PopupAnimation="Fade"
+                    StaysOpen="False">
+                    <Border
+                        BorderBrush="{DynamicResource AccentBaseColorBrush}"
+                        BorderThickness="1">
+                        <Grid>
+                            <ListBox
+                                x:Name="SearchableListBox"
+                                ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.SearchableOpenableObjects}"
+                                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <ListBox.Resources>
+                                    <DataTemplate DataType="{x:Type models:LogView}">
+                                        <DockPanel
+                                            Height="50"
+                                            Margin="0,0,5,0"
+                                            ToolTip="{Binding Identifier}">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="MouseUp">
+                                                    <i:InvokeCommandAction
+                                                        Command="{Binding DataContext.OpenOpenableObjectCommand, Source={x:Reference Launch_View}}"
+                                                        CommandParameter="{Binding}" />
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                            <iconPacks:PackIconMaterial
+                                                Width="25"
+                                                Height="25"
+                                                Margin="8,7,14,7"
+                                                VerticalAlignment="Center"
+                                                DockPanel.Dock="Left"
+                                                Kind="ViewHeadline" />
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                DockPanel.Dock="Left"
+                                                FontSize="14"
+                                                Text="{Binding Identifier}"
+                                                TextTrimming="CharacterEllipsis" />
+                                        </DockPanel>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type models:LogFile}">
+                                        <DockPanel
+                                            Height="50"
+                                            Margin="0,0,5,0"
+                                            ToolTip="{Binding Identifier}">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="MouseUp">
+                                                    <i:InvokeCommandAction
+                                                        Command="{Binding DataContext.OpenOpenableObjectCommand, Source={x:Reference Launch_View}}"
+                                                        CommandParameter="{Binding}" />
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                            <iconPacks:PackIconOcticons
+                                                Width="25"
+                                                Height="25"
+                                                Margin="8,7,14,7"
+                                                VerticalAlignment="Center"
+                                                DockPanel.Dock="Left"
+                                                Kind="File" />
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                DockPanel.Dock="Left"
+                                                FontSize="14"
+                                                Text="{Binding Identifier}"
+                                                TextTrimming="CharacterEllipsis" />
+                                        </DockPanel>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type models:Database}">
+                                        <DockPanel
+                                            Height="50"
+                                            Margin="0,0,5,0"
+                                            ToolTip="{Binding Identifier}">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="MouseUp">
+                                                    <i:InvokeCommandAction
+                                                        Command="{Binding DataContext.OpenOpenableObjectCommand, Source={x:Reference Launch_View}}"
+                                                        CommandParameter="{Binding}" />
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                            <iconPacks:PackIconMaterial
+                                                Width="25"
+                                                Height="25"
+                                                Margin="8,7,14,7"
+                                                VerticalAlignment="Center"
+                                                DockPanel.Dock="Left"
+                                                Kind="Database" />
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                DockPanel.Dock="Left"
+                                                FontSize="14"
+                                                Text="{Binding Identifier}"
+                                                TextTrimming="CharacterEllipsis" />
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </ListBox.Resources>
+                            </ListBox>
+                            <Grid>
+                                <Grid.Style>
+                                    <Style TargetType="Grid">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding Items.Count, Source={x:Reference SearchableListBox}}"
+                                                Value="0">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Style>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock
+                                    Margin="0"
+                                    Padding="0"
+                                    VerticalAlignment="Center"
+                                    Panel.ZIndex="1"
+                                    FontSize="14"
+                                    Text="Nothing matches your search criteria."
+                                    TextAlignment="Center" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Popup>
+                <TextBox
+                    x:Name="SearchTextbox"
+                    Width="450"
+                    HorizontalAlignment="Left"
+                    Controls:TextBoxHelper.ClearTextButton="True"
+                    Controls:TextBoxHelper.IsSpellCheckContextMenuEnabled="True"
+                    Controls:TextBoxHelper.SelectAllOnFocus="True"
+                    Controls:TextBoxHelper.TextButton="False"
+                    Controls:TextBoxHelper.Watermark="Search"
+                    DockPanel.Dock="Top"
+                    Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </DockPanel>
+            <ScrollViewer
+                DockPanel.Dock="Top"
+                HorizontalScrollBarVisibility="Disabled"
+                VerticalScrollBarVisibility="Auto">
+                <Controls:TransitioningContentControl
+                    Content="{Binding SelectedViewModel}"
+                    Transition="Default">
+                    <ContentControl.Resources>
+                        <!--  Home view  -->
+                        <DataTemplate DataType="{x:Type viewModels:HomeViewModel}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition MinHeight="200" />
+                                    <RowDefinition MinHeight="200" />
+                                    <RowDefinition MinHeight="200" />
+                                </Grid.RowDefinitions>
+
+                                <!--  Log views  -->
+                                <DockPanel Grid.Row="1">
+                                    <StackPanel
+                                        HorizontalAlignment="Right"
+                                        DockPanel.Dock="Bottom"
+                                        Orientation="Horizontal">
+                                        <TextBlock
+                                            Name="ViewMoreLogViewsLabel"
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            Opacity="0"
+                                            Text="More log views" />
+                                        <Button
+                                            x:Name="ViewMoreLogViewsButton"
+                                            Margin="0,0,5,0"
+                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenLogViewViewCommand}"
+                                            Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+                                            <Button.Content>
+                                                <iconPacks:PackIconMaterialLight
+                                                    Width="15"
+                                                    Height="15"
+                                                    Margin="5"
+                                                    Kind="ArrowRight" />
+                                            </Button.Content>
+                                            <Button.Triggers>
+                                                <EventTrigger RoutedEvent="Control.MouseEnter">
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation
+                                                                Storyboard.Target="{Binding ElementName=ViewMoreLogViewsLabel}"
+                                                                Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                                To="1"
+                                                                Duration="0:0:0.3" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                                <EventTrigger RoutedEvent="Control.MouseLeave">
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation
+                                                                Storyboard.Target="{Binding ElementName=ViewMoreLogViewsLabel}"
+                                                                Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                                To="0"
+                                                                Duration="0:0:0.3" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                            </Button.Triggers>
+                                        </Button>
+                                    </StackPanel>
+                                    <TabControl
+                                        Controls:TabControlHelper.Transition="Left"
+                                        Controls:TabControlHelper.Underlined="SelectedTabItem"
+                                        DockPanel.Dock="Top">
+                                        <Controls:MetroTabItem Header="Recent Log Views">
+                                            <ItemsControl
+                                                ItemTemplate="{StaticResource LogViewTileTemplate}"
+                                                ItemsPanel="{StaticResource WrapPanelTemplate}"
+                                                ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.RecentlyUsedLogViews}" />
+                                        </Controls:MetroTabItem>
+                                        <Controls:MetroTabItem Header="Pinned Log Views">
+                                            <ItemsControl
+                                                ItemTemplate="{StaticResource LogViewTileTemplate}"
+                                                ItemsPanel="{StaticResource WrapPanelTemplate}"
+                                                ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.PinnedLogViews}" />
+                                        </Controls:MetroTabItem>
+                                    </TabControl>
+                                </DockPanel>
+
+                                <!--  Log files  -->
+                                <DockPanel Grid.Row="2">
+                                    <StackPanel
+                                        HorizontalAlignment="Right"
+                                        DockPanel.Dock="Bottom"
+                                        Orientation="Horizontal">
+                                        <TextBlock
+                                            Name="ViewMoreLogFilesLabel"
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            Opacity="0"
+                                            Text="More log files" />
+                                        <Button
+                                            x:Name="ViewMoreLogFilesButton"
+                                            Margin="0,0,5,0"
+                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenLogFileViewCommand}"
+                                            Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+                                            <Button.Content>
+                                                <iconPacks:PackIconMaterialLight
+                                                    Width="15"
+                                                    Height="15"
+                                                    Margin="5"
+                                                    Kind="ArrowRight" />
+                                            </Button.Content>
+                                            <Button.Triggers>
+                                                <EventTrigger RoutedEvent="Control.MouseEnter">
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation
+                                                                Storyboard.Target="{Binding ElementName=ViewMoreLogFilesLabel}"
+                                                                Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                                To="1"
+                                                                Duration="0:0:0.3" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                                <EventTrigger RoutedEvent="Control.MouseLeave">
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation
+                                                                Storyboard.Target="{Binding ElementName=ViewMoreLogFilesLabel}"
+                                                                Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                                To="0"
+                                                                Duration="0:0:0.3" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                            </Button.Triggers>
+                                        </Button>
+                                    </StackPanel>
+                                    <TabControl
+                                        Controls:TabControlHelper.Transition="Left"
+                                        Controls:TabControlHelper.Underlined="SelectedTabItem"
+                                        DockPanel.Dock="Top">
+                                        <Controls:MetroTabItem Header="Recent Log Files">
+                                            <DataGrid
+                                                AutoGenerateColumns="False"
+                                                IsReadOnly="True"
+                                                IsSynchronizedWithCurrentItem="True"
+                                                ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.RecentlyUsedLogFiles}"
+                                                SelectedItem="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.SelectedLogFile}"
+                                                SelectionMode="Single">
+                                                <DataGrid.RowStyle>
+                                                    <Style
+                                                        BasedOn="{StaticResource MetroDataGridRow}"
+                                                        TargetType="DataGridRow">
+                                                        <Setter Property="ContextMenu" Value="{StaticResource LogFilesContextMenu}" />
+                                                    </Style>
+                                                </DataGrid.RowStyle>
+                                                <DataGrid.InputBindings>
+                                                    <MouseBinding
+                                                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenableObjectCommand}"
+                                                        MouseAction="LeftDoubleClick" />
+                                                </DataGrid.InputBindings>
+                                                <DataGrid.Columns>
+                                                    <DataGridTemplateColumn>
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <iconPacks:PackIconOcticons
+                                                                    Width="15"
+                                                                    Height="15"
+                                                                    Margin="5,0,5,0"
+                                                                    Kind="File" />
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+
+                                                    <DataGridTemplateColumn
+                                                        Header="Name"
+                                                        SortMemberPath="NetworkFile.Name">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock
+                                                                    Margin="5,0,5,0"
+                                                                    Text="{Binding NetworkFile.Name}"
+                                                                    TextTrimming="CharacterEllipsis"
+                                                                    ToolTip="{Binding NetworkFile.Name}" />
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+
+                                                    <DataGridTemplateColumn
+                                                        Header="Folder"
+                                                        SortMemberPath="NetworkFile.Directory">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock
+                                                                    Margin="5,0,5,0"
+                                                                    Text="{Binding NetworkFile.Directory}"
+                                                                    TextTrimming="CharacterEllipsis"
+                                                                    ToolTip="{Binding NetworkFile.Directory}" />
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+
+                                                    <DataGridTemplateColumn
+                                                        Header="Date Last Modified"
+                                                        SortMemberPath="LastWriteTime">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock
+                                                                    Margin="5,0,5,0"
+                                                                    Text="{Binding LastWriteTime, Converter={StaticResource LastWriteTimeToStringConverter}}"
+                                                                    TextTrimming="CharacterEllipsis"
+                                                                    ToolTip="{Binding LastWriteTime, Converter={StaticResource LastWriteTimeToStringConverter}}" />
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+
+                                                    <DataGridTemplateColumn
+                                                        Header="Date Last Opened"
+                                                        SortMemberPath="DateLastOpened">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock
+                                                                    Margin="5,0,5,0"
+                                                                    Text="{Binding DateLastOpened}"
+                                                                    TextTrimming="CharacterEllipsis"
+                                                                    ToolTip="{Binding DateLastOpened}" />
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+
+                                                    <DataGridTemplateColumn
+                                                        Header="Size"
+                                                        SortMemberPath="SizeInBytes">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock
+                                                                    x:Name="SizeTextbox"
+                                                                    Margin="5,0,5,0"
+                                                                    Text="{Binding SizeInBytes, Converter={StaticResource SizeInBytesConverter}}"
+                                                                    TextTrimming="CharacterEllipsis"
+                                                                    ToolTip="{Binding ElementName=SizeTextbox, Path=Text}" />
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </Controls:MetroTabItem>
+                                        <Controls:MetroTabItem Header="Pinned Log Files">
+                                            <DataGrid
+                                                AutoGenerateColumns="False"
+                                                IsReadOnly="True"
+                                                IsSynchronizedWithCurrentItem="True"
+                                                ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.PinnedLogFiles}"
+                                                SelectedItem="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.SelectedLogFile}"
+                                                SelectionMode="Single">
+                                                <DataGrid.RowStyle>
+                                                    <Style
+                                                        BasedOn="{StaticResource MetroDataGridRow}"
+                                                        TargetType="DataGridRow">
+                                                        <Setter Property="ContextMenu" Value="{StaticResource LogFilesContextMenu}" />
+                                                    </Style>
+                                                </DataGrid.RowStyle>
+                                                <DataGrid.InputBindings>
+                                                    <MouseBinding
+                                                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenableObjectCommand}"
+                                                        MouseAction="LeftDoubleClick" />
+                                                </DataGrid.InputBindings>
+                                                <DataGrid.Columns>
+                                                    <DataGridTemplateColumn>
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <iconPacks:PackIconOcticons
+                                                                    Width="15"
+                                                                    Height="15"
+                                                                    Margin="5,0,5,0"
+                                                                    Kind="File" />
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+
+                                                    <DataGridTemplateColumn
+                                                        Header="Name"
+                                                        SortMemberPath="NetworkFile.Name">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock
+                                                                    Margin="5,0,5,0"
+                                                                    Text="{Binding NetworkFile.Name}"
+                                                                    TextTrimming="CharacterEllipsis"
+                                                                    ToolTip="{Binding NetworkFile.Name}" />
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+
+                                                    <DataGridTemplateColumn
+                                                        Header="Folder"
+                                                        SortMemberPath="NetworkFile.Directory">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock
+                                                                    Margin="5,0,5,0"
+                                                                    Text="{Binding NetworkFile.Directory}"
+                                                                    TextTrimming="CharacterEllipsis"
+                                                                    ToolTip="{Binding NetworkFile.Directory}" />
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+
+                                                    <DataGridTemplateColumn
+                                                        Header="Date Last Modified"
+                                                        SortMemberPath="LastWriteTime">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock
+                                                                    Margin="5,0,5,0"
+                                                                    Text="{Binding LastWriteTime, Converter={StaticResource LastWriteTimeToStringConverter}}"
+                                                                    TextTrimming="CharacterEllipsis"
+                                                                    ToolTip="{Binding LastWriteTime, Converter={StaticResource LastWriteTimeToStringConverter}}" />
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+
+                                                    <DataGridTemplateColumn
+                                                        Header="Date Last Opened"
+                                                        SortMemberPath="DateLastOpened">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock
+                                                                    Margin="5,0,5,0"
+                                                                    Text="{Binding DateLastOpened}"
+                                                                    TextTrimming="CharacterEllipsis"
+                                                                    ToolTip="{Binding DateLastOpened}" />
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+
+                                                    <DataGridTemplateColumn
+                                                        Header="Size"
+                                                        SortMemberPath="SizeInBytes">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock
+                                                                    x:Name="SizeTextbox"
+                                                                    Margin="5,0,5,0"
+                                                                    Text="{Binding SizeInBytes, Converter={StaticResource SizeInBytesConverter}}"
+                                                                    TextTrimming="CharacterEllipsis"
+                                                                    ToolTip="{Binding ElementName=SizeTextbox, Path=Text}" />
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </Controls:MetroTabItem>
+                                        <Controls:MetroTabItem
+                                            Header="Browse"
+                                            Selector.Selected="BrowseButton_Clicked" />
+                                    </TabControl>
+                                </DockPanel>
+
+                                <!--  Databases  -->
+                                <DockPanel Grid.Row="3">
+                                    <StackPanel
+                                        HorizontalAlignment="Right"
+                                        DockPanel.Dock="Bottom"
+                                        Orientation="Horizontal">
+                                        <TextBlock
+                                            Name="ViewMoreDatabasesLabel"
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            Opacity="0"
+                                            Text="More databases" />
+                                        <Button
+                                            x:Name="ViewMoreDatabasesButton"
+                                            Margin="0,0,5,0"
+                                            Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenDatabaseViewCommand}"
+                                            Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+                                            <Button.Content>
+                                                <iconPacks:PackIconMaterialLight
+                                                    Width="15"
+                                                    Height="15"
+                                                    Margin="5"
+                                                    Kind="ArrowRight" />
+                                            </Button.Content>
+                                            <Button.Triggers>
+                                                <EventTrigger RoutedEvent="Control.MouseEnter">
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation
+                                                                Storyboard.Target="{Binding ElementName=ViewMoreDatabasesLabel}"
+                                                                Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                                To="1"
+                                                                Duration="0:0:0.3" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                                <EventTrigger RoutedEvent="Control.MouseLeave">
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation
+                                                                Storyboard.Target="{Binding ElementName=ViewMoreDatabasesLabel}"
+                                                                Storyboard.TargetProperty="(TextBlock.Opacity)"
+                                                                To="0"
+                                                                Duration="0:0:0.3" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger>
+                                            </Button.Triggers>
+                                        </Button>
+                                    </StackPanel>
+                                    <TabControl
+                                        Controls:TabControlHelper.Underlined="SelectedTabItem"
+                                        DockPanel.Dock="Top">
+                                        <Controls:MetroTabItem Header="Recent Databases">
+                                            <ItemsControl
+                                                ItemTemplate="{StaticResource DatabaseTileTemplate}"
+                                                ItemsPanel="{StaticResource WrapPanelTemplate}"
+                                                ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.RecentlyUsedDatabases}" />
+                                        </Controls:MetroTabItem>
+                                        <Controls:MetroTabItem Header="Pinned Databases">
+                                            <ItemsControl
+                                                ItemTemplate="{StaticResource DatabaseTileTemplate}"
+                                                ItemsPanel="{StaticResource WrapPanelTemplate}"
+                                                ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.PinnedDatabases}" />
+                                        </Controls:MetroTabItem>
+                                    </TabControl>
+                                </DockPanel>
+                            </Grid>
+                        </DataTemplate>
+
+                        <!--  Databases view  -->
+                        <DataTemplate DataType="{x:Type viewModels:DatabasesViewModel}">
+                            <local:DatabasesView
+                                Databases="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.Databases}"
+                                DatabasesSourceCache="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.DatabasesSourceCache}" />
+                        </DataTemplate>
+
+                        <!--  Open Log View View  -->
+                        <DataTemplate DataType="{x:Type viewModels:OpenLogViewViewModel}">
+                            <TabControl
+                                MaxHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Path=Height, Converter={StaticResource MainWindowHeightToScrollViewerMaxHeightConverter}}"
+                                Controls:TabControlHelper.Transition="Left"
+                                Controls:TabControlHelper.Underlined="SelectedTabItem">
+                                <Controls:MetroTabItem Header="All Log Views">
+                                    <ScrollViewer>
+                                        <ItemsControl
+                                            ItemTemplate="{StaticResource LogViewTileTemplate}"
+                                            ItemsPanel="{StaticResource WrapPanelTemplate}"
+                                            ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.LogViews}"
+                                            ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                                    </ScrollViewer>
+                                </Controls:MetroTabItem>
+                                <Controls:MetroTabItem Header="Pinned Log Views">
+                                    <ScrollViewer>
+                                        <ItemsControl
+                                            ItemTemplate="{StaticResource LogViewTileTemplate}"
+                                            ItemsPanel="{StaticResource WrapPanelTemplate}"
+                                            ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.PinnedLogViews}"
+                                            ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                                    </ScrollViewer>
+                                </Controls:MetroTabItem>
+                            </TabControl>
+                        </DataTemplate>
+
+                        <!--  Open Log File View  -->
+                        <DataTemplate DataType="{x:Type viewModels:OpenLogFileViewModel}">
+                            <TabControl
+                                MaxHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Path=Height, Converter={StaticResource MainWindowHeightToScrollViewerMaxHeightConverter}}"
+                                Controls:TabControlHelper.Transition="Left"
+                                Controls:TabControlHelper.Underlined="SelectedTabItem">
+                                <Controls:MetroTabItem Header="All Log Files">
+                                    <DataGrid
+                                        AutoGenerateColumns="False"
+                                        IsReadOnly="True"
+                                        IsSynchronizedWithCurrentItem="True"
+                                        ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.LogFiles}"
+                                        SelectedItem="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.SelectedLogFile}"
+                                        SelectionMode="Single">
+                                        <DataGrid.RowStyle>
+                                            <Style
+                                                BasedOn="{StaticResource MetroDataGridRow}"
+                                                TargetType="DataGridRow">
+                                                <Setter Property="ContextMenu" Value="{StaticResource LogFilesContextMenu}" />
+                                            </Style>
+                                        </DataGrid.RowStyle>
+                                        <DataGrid.InputBindings>
+                                            <MouseBinding
+                                                Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenableObjectCommand}"
+                                                MouseAction="LeftDoubleClick" />
+                                        </DataGrid.InputBindings>
+                                        <DataGrid.Columns>
+                                            <DataGridTemplateColumn>
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <iconPacks:PackIconOcticons
+                                                            Width="15"
+                                                            Height="15"
+                                                            Margin="5,0,5,0"
+                                                            Kind="File" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn
+                                                Header="Name"
+                                                SortMemberPath="NetworkFile.Name">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock
+                                                            Margin="5,0,5,0"
+                                                            Text="{Binding NetworkFile.Name}"
+                                                            TextTrimming="CharacterEllipsis"
+                                                            ToolTip="{Binding NetworkFile.Name}" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn
+                                                Header="Folder"
+                                                SortMemberPath="NetworkFile.Directory">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock
+                                                            Margin="5,0,5,0"
+                                                            Text="{Binding NetworkFile.Directory}"
+                                                            TextTrimming="CharacterEllipsis"
+                                                            ToolTip="{Binding NetworkFile.Directory}" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn
+                                                Header="Date Last Modified"
+                                                SortMemberPath="LastWriteTime">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock
+                                                            Margin="5,0,5,0"
+                                                            Text="{Binding LastWriteTime, Converter={StaticResource LastWriteTimeToStringConverter}}"
+                                                            TextTrimming="CharacterEllipsis"
+                                                            ToolTip="{Binding LastWriteTime, Converter={StaticResource LastWriteTimeToStringConverter}}" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn
+                                                Header="Date Last Opened"
+                                                SortMemberPath="DateLastOpened">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock
+                                                            Margin="5,0,5,0"
+                                                            Text="{Binding DateLastOpened}"
+                                                            TextTrimming="CharacterEllipsis"
+                                                            ToolTip="{Binding DateLastOpened}" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn
+                                                Header="Size"
+                                                SortMemberPath="SizeInBytes">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock
+                                                            x:Name="SizeTextbox"
+                                                            Margin="5,0,5,0"
+                                                            Text="{Binding SizeInBytes, Converter={StaticResource SizeInBytesConverter}}"
+                                                            TextTrimming="CharacterEllipsis"
+                                                            ToolTip="{Binding ElementName=SizeTextbox, Path=Text}" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Controls:MetroTabItem>
+                                <Controls:MetroTabItem Header="Pinned Log Files">
+                                    <DataGrid
+                                        AutoGenerateColumns="False"
+                                        IsReadOnly="True"
+                                        IsSynchronizedWithCurrentItem="True"
+                                        ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.PinnedLogFiles}"
+                                        SelectedItem="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.SelectedLogFile}"
+                                        SelectionMode="Single">
+                                        <DataGrid.RowStyle>
+                                            <Style
+                                                BasedOn="{StaticResource MetroDataGridRow}"
+                                                TargetType="DataGridRow">
+                                                <Setter Property="ContextMenu" Value="{StaticResource LogFilesContextMenu}" />
+                                            </Style>
+                                        </DataGrid.RowStyle>
+                                        <DataGrid.InputBindings>
+                                            <MouseBinding
+                                                Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.OpenOpenableObjectCommand}"
+                                                MouseAction="LeftDoubleClick" />
+                                        </DataGrid.InputBindings>
+                                        <DataGrid.Columns>
+                                            <DataGridTemplateColumn>
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <iconPacks:PackIconOcticons
+                                                            Width="15"
+                                                            Height="15"
+                                                            Margin="5,0,5,0"
+                                                            Kind="File" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn
+                                                Header="Name"
+                                                SortMemberPath="NetworkFile.Name">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock
+                                                            Margin="5,0,5,0"
+                                                            Text="{Binding NetworkFile.Name}"
+                                                            TextTrimming="CharacterEllipsis"
+                                                            ToolTip="{Binding NetworkFile.Name}" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn
+                                                Header="Folder"
+                                                SortMemberPath="NetworkFile.Directory">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock
+                                                            Margin="5,0,5,0"
+                                                            Text="{Binding NetworkFile.Directory}"
+                                                            TextTrimming="CharacterEllipsis"
+                                                            ToolTip="{Binding NetworkFile.Directory}" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn
+                                                Header="Date Last Modified"
+                                                SortMemberPath="LastWriteTime">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock
+                                                            Margin="5,0,5,0"
+                                                            Text="{Binding LastWriteTime, Converter={StaticResource LastWriteTimeToStringConverter}}"
+                                                            TextTrimming="CharacterEllipsis"
+                                                            ToolTip="{Binding LastWriteTime, Converter={StaticResource LastWriteTimeToStringConverter}}" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn
+                                                Header="Date Last Opened"
+                                                SortMemberPath="DateLastOpened">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock
+                                                            Margin="5,0,5,0"
+                                                            Text="{Binding DateLastOpened}"
+                                                            TextTrimming="CharacterEllipsis"
+                                                            ToolTip="{Binding DateLastOpened}" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+
+                                            <DataGridTemplateColumn
+                                                Header="Size"
+                                                SortMemberPath="SizeInBytes">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock
+                                                            x:Name="SizeTextbox"
+                                                            Margin="5,0,5,0"
+                                                            Text="{Binding SizeInBytes, Converter={StaticResource SizeInBytesConverter}}"
+                                                            TextTrimming="CharacterEllipsis"
+                                                            ToolTip="{Binding ElementName=SizeTextbox, Path=Text}" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Controls:MetroTabItem>
+                                <Controls:MetroTabItem
+                                    Header="Browse"
+                                    Selector.Selected="BrowseButton_Clicked" />
+                            </TabControl>
+                        </DataTemplate>
+
+                        <!--  Open database view  -->
+                        <DataTemplate DataType="{x:Type viewModels:OpenDatabaseViewModel}">
+                            <TabControl
+                                MaxHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Path=Height, Converter={StaticResource MainWindowHeightToScrollViewerMaxHeightConverter}}"
+                                Controls:TabControlHelper.Underlined="SelectedTabItem">
+                                <Controls:MetroTabItem Header="All Databases">
+                                    <ScrollViewer>
+                                        <ItemsControl
+                                            ItemTemplate="{StaticResource DatabaseTileTemplate}"
+                                            ItemsPanel="{StaticResource WrapPanelTemplate}"
+                                            ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.Databases}"
+                                            ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                                    </ScrollViewer>
+                                </Controls:MetroTabItem>
+                                <Controls:MetroTabItem Header="Pinned Databases">
+                                    <ScrollViewer>
+                                        <ItemsControl
+                                            ItemTemplate="{StaticResource DatabaseTileTemplate}"
+                                            ItemsPanel="{StaticResource WrapPanelTemplate}"
+                                            ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:LaunchView}}, Path=DataContext.PinnedDatabases}"
+                                            ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                                    </ScrollViewer>
+                                </Controls:MetroTabItem>
+                            </TabControl>
+                        </DataTemplate>
+                    </ContentControl.Resources>
+                </Controls:TransitioningContentControl>
+            </ScrollViewer>
+        </DockPanel>
+    </DockPanel>
+</UserControl>

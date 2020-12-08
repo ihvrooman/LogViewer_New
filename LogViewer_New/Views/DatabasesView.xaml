@@ -1,0 +1,93 @@
+﻿<UserControl
+    x:Class="LogViewer.Views.DatabasesView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:local="clr-namespace:LogViewer.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Dialog:DialogParticipation.Register="{Binding}"
+    d:DesignHeight="170"
+    d:DesignWidth="185"
+    Loaded="DatabasesView_Loaded"
+    mc:Ignorable="d">
+    <Controls:MetroHeader Header="Databases">
+        <Controls:MetroHeader.HeaderTemplate>
+            <DataTemplate>
+                <StackPanel
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial
+                        Width="20"
+                        Height="20"
+                        VerticalAlignment="Center"
+                        Kind="Database" />
+                    <TextBlock
+                        Margin="5,0,0,0"
+                        VerticalAlignment="Center"
+                        FontSize="25"
+                        Text="{Binding}" />
+                </StackPanel>
+            </DataTemplate>
+        </Controls:MetroHeader.HeaderTemplate>
+        <DockPanel>
+            <Grid
+                Margin="0,10,0,0"
+                DockPanel.Dock="Bottom">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="25" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Button
+                    Grid.Column="0"
+                    Width="50"
+                    Height="50"
+                    HorizontalAlignment="Right"
+                    Command="{Binding AddDatabaseCommand}"
+                    Foreground="White"
+                    Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"
+                    ToolTip="Add Database">
+                    <iconPacks:PackIconMaterial
+                        Width="30"
+                        Height="30"
+                        Kind="DatabasePlus" />
+                </Button>
+                <Button
+                    Grid.Column="2"
+                    Width="50"
+                    Height="50"
+                    HorizontalAlignment="Left"
+                    Command="{Binding RemoveDatabaseCommand}"
+                    Foreground="White"
+                    Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"
+                    ToolTip="Remove Database">
+                    <iconPacks:PackIconMaterial
+                        Width="30"
+                        Height="30"
+                        Margin="2"
+                        Kind="DatabaseMinus" />
+                </Button>
+            </Grid>
+            <Border
+                BorderBrush="{DynamicResource AccentColorBrush}"
+                BorderThickness="1"
+                DockPanel.Dock="Top">
+                <ListBox
+                    Margin="5"
+                    ItemsSource="{Binding Databases}"
+                    SelectedIndex="{Binding SelectedIndex}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock
+                                FontSize="18"
+                                Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+        </DockPanel>
+    </Controls:MetroHeader>
+</UserControl>
