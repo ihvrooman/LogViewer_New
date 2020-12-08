@@ -6,4 +6,4 @@
 obj/
 bin/
 packages/
-packages.config
+/Sotax.Ui.Xamarin/*.user
