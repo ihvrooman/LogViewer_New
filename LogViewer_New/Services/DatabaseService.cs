@@ -17,7 +17,7 @@ namespace LogViewer.Services
     {
         #region Constants
         public const string DatabaseAndTableName = "EventLogConnectX or EventLogJetX"; //"[SOADB].[dbo].[Local_SSI_ErrorLogDetail]";
-        private const string _databaseNameFormat = "'{SQLInstanceName}.{DatabaseName}.{SQLUsername}.{SQLPassword}'";
+        private static string _databaseNameFormat = $"'{{SQLInstanceName}}{AddDatabaseInfo.DatabaseInfoSplitter}{{DatabaseName}}{AddDatabaseInfo.DatabaseInfoSplitter}{{SQLUsername}}{AddDatabaseInfo.DatabaseInfoSplitter}{{SQLPassword}}'";
         private const string _databaseNameFormatNote = "Note: The username and password are only required if using SQL authentication.";
         private const string unformattedSQLCommandText = @"SELECT [Code]
       ,[Message]
@@ -166,9 +166,9 @@ ORDER BY [SOADB].[dbo].[Local_SSI_ErrorLogDetail].[TimeStamp]";*/
                     await dialogCoordinator.ShowMessageAsync(dialogContext, "Invalid Database Name", $"The new database name cannot be greater than {maxCharLength} characters.");
                     dialogSettings1.DefaultText = newDatabaseName.Substring(0, maxCharLength);
                 }
-                else if (!newDatabaseName.Contains(".") || newDatabaseName.Contains("{") || newDatabaseName.Contains("}"))
+                else if (!newDatabaseName.Contains(AddDatabaseInfo.DatabaseInfoSplitter) || newDatabaseName.Contains("{") || newDatabaseName.Contains("}"))
                 {
-                    await dialogCoordinator.ShowMessageAsync(dialogContext, "Invalid Database Name", $"The new database name must be in the format {_databaseNameFormat}.{Environment.NewLine + _databaseNameFormatNote}" + Environment.NewLine + "Example: MainServer\\SQLEXPRESS.CustomerInfo");
+                    await dialogCoordinator.ShowMessageAsync(dialogContext, "Invalid Database Name", $"The new database name must be in the format {_databaseNameFormat}.{Environment.NewLine + _databaseNameFormatNote}" + Environment.NewLine + $"Example: 198.163.22.10\\MSSQLSERVER,1433{AddDatabaseInfo.DatabaseInfoSplitter}CustomerInfo*username*password");
                 }
                 else
                 {

@@ -478,6 +478,42 @@ namespace LogViewer.Services
             }
             return result;
         }
+
+        public static void UpgradeDatabaseSettings()
+        {
+            SourceCache<Database, string> databasesSourceCache = new SourceCache<Database, string>(database => database.Name);
+            LoadDatabasesIntoSourceCache(databasesSourceCache).Wait();
+            foreach (var database in databasesSourceCache.Items)
+            {
+                var name = database.Name;
+                RemoveDatabaseByName(name).Wait();
+                name = name.Replace(".", "*");
+                var newDatabase = new Database(name)
+                {
+                    IsPinned = database.IsPinned,
+                    DateLastOpened = database.DateLastOpened
+                };
+                AddOrUpdateDatabase(newDatabase).Wait();
+            }
+
+            SourceCache<LogView, string> logViewsSourceCache = new SourceCache<LogView, string>(logView => logView.Name);
+            LoadLogViewsIntoSourceCache(logViewsSourceCache).Wait();
+            foreach (var logView in logViewsSourceCache.Items)
+            {
+                for (int i = 0; i < logView.DatabaseNames.Count; i++)
+                {
+                    var databaseName = logView.DatabaseNames[i];
+                    if (databaseName.Contains("."))
+                    {
+                        logView.DatabaseNames[i] = databaseName.Replace(".", "*");
+                    }
+                }
+                AddOrUpdateLogView(logView).Wait();
+            }
+
+            Settings.Default.UpgradeDatabaseSettings2 = false;
+            SaveSettings();
+        }
         #endregion
     }
 }

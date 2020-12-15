@@ -8,6 +8,10 @@ namespace LogViewer.Models
 {
     public class AddDatabaseInfo
     {
+        #region Constants
+        public const char DatabaseInfoSplitter = '*';
+        #endregion
+
         #region Properties
         public string SQLInstanceName { get; private set; }
         public string DatabaseName { get; private set; }
@@ -18,7 +22,7 @@ namespace LogViewer.Models
         #region Constructor
         public AddDatabaseInfo(string unformattedDatabaseName)
         {
-            var split = unformattedDatabaseName.Split('.');
+            var split = unformattedDatabaseName.Split(DatabaseInfoSplitter);
             SQLInstanceName = split[0].ToUpper();
             DatabaseName = split[1].ToUpper();
 
@@ -33,10 +37,10 @@ namespace LogViewer.Models
         #region Methods
         public string ToFormattedString()
         {
-            var formattedString = $"{SQLInstanceName}.{DatabaseName}";
+            var formattedString = SQLInstanceName + DatabaseInfoSplitter + DatabaseName;
             if (!string.IsNullOrEmpty(SQLUsername) && !string.IsNullOrEmpty(SQLPassword))
             {
-                formattedString += $".{SQLUsername}.{SQLPassword}";
+                formattedString += DatabaseInfoSplitter + SQLUsername + DatabaseInfoSplitter + SQLPassword;
             }
             return formattedString;
         }

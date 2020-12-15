@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Shell;
 using LogViewer.Properties;
+using LogViewer.Services;
 
 namespace LogViewer
 {
@@ -39,10 +40,17 @@ namespace LogViewer
                         Settings.Default.Save();
                         AppInfo.BaseAppInfo.Log.QueueLogMessageAsync($"User settings successfully upgraded.");
                     }
+
+                    if (Settings.Default.UpgradeDatabaseSettings2)
+                    {
+                        AppInfo.BaseAppInfo.Log.QueueLogMessageAsync($"Upgrading database settings.");
+                        SettingsService.UpgradeDatabaseSettings();
+                        AppInfo.BaseAppInfo.Log.QueueLogMessageAsync($"Database settings successfully upgraded.");
+                    }
                 }
                 catch (Exception ex)
                 {
-                    AppInfo.BaseAppInfo.Log.QueueLogMessageAsync($"Failed to upgrade user settings. Error message: {ex.Message}", LogMessageType.Error);
+                    AppInfo.BaseAppInfo.Log.QueueLogMessageAsync($"Failed to upgrade user or database settings. Error message: {ex.Message}", LogMessageType.Error);
                 }
 
                 var application = new App();
